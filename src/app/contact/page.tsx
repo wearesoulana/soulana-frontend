@@ -10,7 +10,7 @@ import {
 } from "@/components/sections/contact";
 
 export const metadata: Metadata = {
-  title: "Contact Us | CharityChain",
+  title: "Contact Us | Soulana",
   description: "Get in touch with our team. We're here to help with any questions about blockchain-powered charitable giving.",
   keywords: ["contact", "support", "help", "charity", "blockchain", "donation"],
 };
