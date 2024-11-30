@@ -1,2 +1,1 @@
-# ostim-hackathon
-solana hackathon
+#F1ECCE #20201D #731010 #802626 #8C3A3A
