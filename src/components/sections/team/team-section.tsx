@@ -6,7 +6,7 @@ const teamMembers = [
     id: 1,
     name: "Barış Cem Bayburtlu",
     role: "Frontend & Backend Developer", 
-    image: "/team/placeholder.jpg",
+    image: "/images/team/barispic.png",
     bio: "Full-stack developer with expertise in React and Node.js. Passionate about building impactful web applications.",
     social: {
       twitter: "#",
@@ -18,7 +18,7 @@ const teamMembers = [
     id: 2,
     name: "Mehmet Ali Selvet",
     role: "Backend & Blockchain Developer",
-    image: "/team/placeholder.jpg",
+    image: "/images/team/phun333pic.jpg",
     bio: "Experienced blockchain developer specializing in smart contracts and decentralized applications. Focused on scalable solutions.",
     social: {
       twitter: "#",
@@ -30,7 +30,7 @@ const teamMembers = [
     id: 3,
     name: "Eylül Çağan Uğtur",
     role: "Product Owner & Designer",
-    image: "/team/placeholder.jpg",
+    image: "/images/team/caganpic.jpg",
     bio: "Product strategist and UI/UX designer with a keen eye for detail. Dedicated to creating seamless user experiences.",
     social: {
       twitter: "#",

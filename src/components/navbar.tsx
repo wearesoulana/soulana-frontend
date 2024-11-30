@@ -23,6 +23,12 @@ const navigation = [
     description: "Welcome to the future of giving"
   },
   { 
+    name: "Donate",
+    href: "/donate",
+    icon: Heart,
+    description: "Support our charitable projects"
+  },
+  { 
     name: "Our Mission",
     href: "/mission",
     icon: Heart,

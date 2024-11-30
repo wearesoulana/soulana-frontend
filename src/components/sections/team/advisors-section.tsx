@@ -4,9 +4,9 @@ import { Linkedin, Twitter } from "lucide-react";
 const advisors = [
   {
     id: 1,
-    name: "Dr. Emily Roberts",
-    role: "Blockchain Advisor",
-    image: "/team/placeholder.jpg",
+    name: "Anatoly Yakovenko",
+    role: "The Inventor of Speed",
+    image: "/images/advisors/Anatoly_Yakovenko.jpg",
     bio: "Leading researcher in blockchain technology and social impact.",
     social: {
       twitter: "#",
@@ -51,7 +51,8 @@ export const AdvisorsSection = () => {
                   alt={advisor.name}
                   width={96}
                   height={96}
-                  className="rounded-full object-cover"
+                  className="rounded-full object-cover w-full h-full"
+                  style={{ objectFit: "cover", objectPosition: "center" }}
                 />
               </div>
               <div>
