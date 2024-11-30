@@ -9,7 +9,7 @@ import {
 } from "@/components/sections/how-it-works/donation-process";
 
 export const metadata: Metadata = {
-	title: "How Donations Work | CharityChain",
+	title: "How Donations Work | Soulana",
 	description: "Understand our simple and secure blockchain-powered donation process. Make transparent donations with instant tracking.",
 	keywords: ["donation", "blockchain", "process", "charity", "giving", "transparency"],
 };

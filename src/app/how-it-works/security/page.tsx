@@ -9,7 +9,7 @@ import {
 } from "@/components/sections/how-it-works/security";
 
 export const metadata: Metadata = {
-  title: "Security & Compliance | CharityChain",
+  title: "Security & Compliance | Soulana",
   description: "Learn about our enterprise-grade security measures and compliance standards for blockchain-powered charitable giving.",
   keywords: ["security", "blockchain", "compliance", "encryption", "protection", "safety"],
 };

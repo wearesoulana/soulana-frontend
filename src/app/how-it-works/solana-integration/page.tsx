@@ -9,7 +9,7 @@ import {
 } from "@/components/sections/how-it-works/solana-integration";
 
 export const metadata: Metadata = {
-  title: "Solana Integration | CharityChain",
+  title: "Solana Integration | Soulana",
   description: "Discover how we leverage Solana blockchain for fast, secure, and cost-effective charitable donations.",
   keywords: ["solana", "blockchain", "integration", "crypto donation", "technology"],
 };
