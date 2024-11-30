@@ -25,8 +25,8 @@ type FAQItem = {
 const faqs: FAQItem[] = [
   {
     id: "token-what",
-    question: "What is the CharityChain Token?",
-    answer: "CharityChain Token (CCT) is a governance and utility token that rewards donors for their charitable contributions. When you make a donation through our platform, you automatically receive tokens worth 1% of your donation amount."
+    question: "What is the Soulana Token?",
+    answer: "Soulana Token (CCT) is a governance and utility token that rewards donors for their charitable contributions. When you make a donation through our platform, you automatically receive tokens worth 1% of your donation amount."
   },
   {
     id: "token-earn",
@@ -36,7 +36,7 @@ const faqs: FAQItem[] = [
   {
     id: "token-use",
     question: "What can I do with my tokens?",
-    answer: "CharityChain tokens can be used for various purposes: participate in governance voting, receive exclusive rewards, get priority access to new features, and potentially earn staking rewards in the future."
+    answer: "Soulana tokens can be used for various purposes: participate in governance voting, receive exclusive rewards, get priority access to new features, and potentially earn staking rewards in the future."
   },
   {
     id: "token-calculation",
@@ -97,7 +97,7 @@ export default function TokenRewardsPage() {
           {/* Hero Section */}
           <div className="text-center mb-16 mt-16">
             <h1 className="text-4xl font-bold mb-4 text-red-950 dark:text-rose-50">
-              CharityChain Token Rewards
+              Soulana Token Rewards
             </h1>
             <p className="text-lg text-red-800/60 dark:text-rose-100/60 mb-8">
               Earn tokens by making donations and participate in governance

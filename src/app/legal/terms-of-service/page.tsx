@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export const metadata = {
-  title: "Terms of Service - CharityChain",
-  description: "Terms and conditions for using the CharityChain platform.",
+  title: "Terms of Service - Soulana",
+  description: "Terms and conditions for using the Soulana platform.",
 };
 
 export const dynamic = "force-static";
@@ -24,7 +24,7 @@ export default function TermsOfServicePage() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">1. Acceptance of Terms</h2>
               <p className="mb-4">
-                By accessing and using CharityChain&apos;s services, you agree to comply with and be bound by these Terms of Service.
+                By accessing and using Soulana&apos;s services, you agree to comply with and be bound by these Terms of Service.
               </p>
             </section>
 
@@ -62,12 +62,12 @@ export default function TermsOfServicePage() {
 
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">5. Intellectual Property</h2>
-              <p>All content, features, and functionality of our service are owned by CharityChain and protected by international copyright, trademark, and other intellectual property laws.</p>
+              <p>All content, features, and functionality of our service are owned by Soulana and protected by international copyright, trademark, and other intellectual property laws.</p>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">6. Limitation of Liability</h2>
-              <p>CharityChain shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the service.</p>
+              <p>Soulana shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use or inability to use the service.</p>
             </section>
 
             <section className="mb-8">
@@ -78,7 +78,7 @@ export default function TermsOfServicePage() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">8. Contact Information</h2>
               <p>For questions about these Terms, please contact us at:</p>
-              <p>Email: legal@charitychain.org</p>
+              <p>Email: legal@Soulana.org</p>
             </section>
           </div>
         </div>

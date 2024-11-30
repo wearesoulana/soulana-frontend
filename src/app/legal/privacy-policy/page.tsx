@@ -3,7 +3,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export const metadata = {
-  title: "Privacy Policy - CharityChain",
+  title: "Privacy Policy - Soulana",
   description: "Our commitment to protecting your privacy and personal information.",
 };
 
@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">5. Contact Us</h2>
               <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-              <p>Email: privacy@charitychain.org</p>
+              <p>Email: privacy@Soulana.org</p>
             </section>
           </div>
         </div>

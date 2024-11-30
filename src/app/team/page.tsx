@@ -6,8 +6,8 @@ import { TeamSection } from "@/components/sections/team/team-section";
 import { AdvisorsSection } from "@/components/sections/team/advisors-section";
 
 export const metadata: Metadata = {
-  title: "Our Team | CharityChain",
-  description: "Meet the passionate team behind CharityChain. Learn about our experts and advisors driving blockchain innovation in charitable giving.",
+  title: "Our Team | Soulana",
+  description: "Meet the passionate team behind Soulana. Learn about our experts and advisors driving blockchain innovation in charitable giving.",
   keywords: ["team", "experts", "advisors", "blockchain", "charity", "careers", "jobs"],
 };
 

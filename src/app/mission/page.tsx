@@ -6,7 +6,7 @@ import { ValuesSection } from "@/components/sections/mission/values-section";
 import { VisionSection } from "@/components/sections/mission/vision-section";
 
 export const metadata: Metadata = {
-  title: "Our Mission | CharityChain",
+  title: "Our Mission | Soulana",
   description: "Learn about our mission to revolutionize charitable giving through blockchain technology and create lasting global impact.",
   keywords: ["mission", "vision", "values", "blockchain charity", "social impact"],
 };

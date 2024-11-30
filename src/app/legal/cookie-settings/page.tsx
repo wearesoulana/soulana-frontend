@@ -116,8 +116,8 @@ export default function CookieSettingsPage() {
               </p>
               <p>
                 If you have any questions about our cookie usage, please contact us at{" "}
-                <a href="mailto:privacy@charitychain.org" className="text-red-600 dark:text-red-400 hover:underline">
-                  privacy@charitychain.org
+                <a href="mailto:privacy@Soulana.org" className="text-red-600 dark:text-red-400 hover:underline">
+                  privacy@Soulana.org
                 </a>
                 .
               </p>

@@ -3,8 +3,8 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export const metadata = {
-  title: "Accessibility - CharityChain",
-  description: "Our commitment to making CharityChain accessible to everyone.",
+  title: "Accessibility - Soulana",
+  description: "Our commitment to making Soulana accessible to everyone.",
 };
 
 export const dynamic = "force-static";
@@ -24,7 +24,7 @@ export default function AccessibilityPage() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">Our Commitment</h2>
               <p>
-                CharityChain is committed to ensuring digital accessibility for people with disabilities. 
+                Soulana is committed to ensuring digital accessibility for people with disabilities. 
                 We are continually improving the user experience for everyone and applying the relevant 
                 accessibility standards.
               </p>
@@ -71,18 +71,18 @@ export default function AccessibilityPage() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">Feedback</h2>
               <p>
-                We welcome your feedback on the accessibility of CharityChain. Please let us know if you 
+                We welcome your feedback on the accessibility of Soulana. Please let us know if you 
                 encounter accessibility barriers:
               </p>
               <ul className="list-disc pl-6 mb-4">
-                <li>Email: accessibility@charitychain.org</li>
+                <li>Email: accessibility@Soulana.org</li>
                 <li>Phone: (555) 123-4567</li>
               </ul>
             </section>
 
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">Assessment Methods</h2>
-              <p>We assess the accessibility of CharityChain through the following methods:</p>
+              <p>We assess the accessibility of Soulana through the following methods:</p>
               <ul className="list-disc pl-6 mb-4">
                 <li>External accessibility audits</li>
                 <li>Automated testing tools</li>

@@ -4,7 +4,7 @@ import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
-  title: "Donate | CharityChain",
+  title: "Donate | Soulana",
   description: "Make a difference by donating to our Solana-powered charitable projects.",
 };
 

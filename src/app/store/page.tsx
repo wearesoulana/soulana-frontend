@@ -21,7 +21,7 @@ type Product = {
 const products: Product[] = [
   {
     id: "tshirt-black",
-    name: "CharityChain T-Shirt",
+    name: "Soulana T-Shirt",
     description: "Premium cotton t-shirt with embroidered logo",
     price: 500, // 500 tokens
     image: "/images/store/tshirt.png",
@@ -99,7 +99,7 @@ export default function StorePage() {
           <div className="flex flex-col md:flex-row justify-between items-center mb-12">
             <div>
               <h1 className="text-4xl font-bold mb-4 text-red-950 dark:text-rose-50">
-                CharityChain Store
+                Soulana Store
               </h1>
               <p className="text-lg text-red-800/60 dark:text-rose-100/60">
                 Redeem your tokens for exclusive merchandise
