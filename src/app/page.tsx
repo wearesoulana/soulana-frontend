@@ -12,7 +12,7 @@ import {
 } from "@/components/sections/landing";
 
 export const metadata: Metadata = {
-  title: "CharityChain - Blockchain-Powered Charitable Giving",
+  title: "Soulana - Blockchain-Powered Charitable Giving",
   description: "Transform charitable giving with blockchain technology. Make secure, transparent donations and track your impact in real-time.",
   keywords: ["charity", "blockchain", "donation", "solana", "transparency", "giving"],
 };

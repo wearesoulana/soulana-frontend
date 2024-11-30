@@ -7,16 +7,16 @@ import { WalletContextProvider } from "@/components/wallet-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://charitychain.com"),
+  metadataBase: new URL("https://Soulana.com"),
   title: {
-    template: "%s | CharityChain",
-    default: "CharityChain - Blockchain-Powered Charitable Giving",
+    template: "%s | Soulana",
+    default: "Soulana - Blockchain-Powered Charitable Giving",
   },
   description: "Transform charitable giving with blockchain technology. Make secure, transparent donations and track your impact in real-time.",
   keywords: ["charity", "blockchain", "donation", "solana", "transparency", "giving"],
-  authors: [{ name: "CharityChain Team" }],
-  creator: "CharityChain",
-  publisher: "CharityChain",
+  authors: [{ name: "Soulana Team" }],
+  creator: "Soulana",
+  publisher: "Soulana",
   formatDetection: {
     email: false,
     address: false,
@@ -25,25 +25,25 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://charitychain.com",
-    siteName: "CharityChain",
-    title: "CharityChain - Blockchain-Powered Charitable Giving",
+    url: "https://Soulana.com",
+    siteName: "Soulana",
+    title: "Soulana - Blockchain-Powered Charitable Giving",
     description: "Transform charitable giving with blockchain technology. Make secure, transparent donations and track your impact in real-time.",
     images: [
       {
         url: "/images/og/default.jpg",
         width: 1200,
         height: 630,
-        alt: "CharityChain",
+        alt: "Soulana",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CharityChain - Blockchain-Powered Charitable Giving",
+    title: "Soulana - Blockchain-Powered Charitable Giving",
     description: "Transform charitable giving with blockchain technology. Make secure, transparent donations and track your impact in real-time.",
     images: ["/images/og/default.jpg"],
-    creator: "@charitychain",
+    creator: "@Soulana",
   },
   robots: {
     index: true,
