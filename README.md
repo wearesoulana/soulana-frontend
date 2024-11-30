@@ -1,0 +1,2 @@
+# ostim-hackathon
+solana hackathon
