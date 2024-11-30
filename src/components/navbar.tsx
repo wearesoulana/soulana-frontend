@@ -8,9 +8,11 @@ import {
   Home, 
   Users, 
   Heart,
+  PiggyBank,
   Coins,
   Zap, 
-  MessageCircle
+  MessageCircle,
+  Rocket
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { WalletButton } from "@/components/ui/wallet-button";
@@ -25,13 +27,13 @@ const navigation = [
   { 
     name: "Donate",
     href: "/donate",
-    icon: Heart,
+    icon: PiggyBank,
     description: "Support our charitable projects"
   },
   { 
     name: "Our Mission",
     href: "/mission",
-    icon: Heart,
+    icon: Rocket,
     description: "Transforming global philanthropy"
   },
   { 
@@ -144,7 +146,7 @@ export function Navbar() {
                 />
               </div>
               <span className="text-2xl font-bold text-red-950 dark:text-rose-50">
-                CharityChain
+                Soulana
               </span>
             </button>
           </div>

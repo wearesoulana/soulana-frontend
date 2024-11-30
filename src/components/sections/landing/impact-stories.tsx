@@ -90,7 +90,7 @@ export const ImpactStories = () => {
                 <span className="font-semibold">{story.amount}</span>
               </div>
               <span className="text-sm text-red-800/60 dark:text-rose-100/60">
-                Raised through CharityChain
+                Raised through Soulana
               </span>
             </div>
           </div>
