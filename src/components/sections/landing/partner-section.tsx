@@ -56,7 +56,7 @@ export const PartnerSection = () => {
   return (
     <section 
       ref={elementRef}
-      className={`py-20 overflow-hidden bg-white/50 dark:bg-black/20 transition-opacity duration-1000 ${
+      className={`py-20 overflow-hidden bg-white/50 dark:bg-black/20  transition-opacity duration-1000 ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
     >
@@ -69,10 +69,9 @@ export const PartnerSection = () => {
 
         {/* Primary Marquee container with gradient masks */}
         <div className="relative flex overflow-x-hidden hover:[&>*]:pause">
-          {/* Gradient masks */}
-          <div className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-white dark:from-black to-transparent z-10" />
-          <div className="absolute inset-y-0 right-0 w-48 bg-gradient-to-l from-white dark:from-black to-transparent z-10" />
-          
+          {/* Gradient masks - hidden on mobile */}
+          <div className="absolute inset-y-0 left-0 w-48 bg-gradient-to-r from-white dark:from-[#080101] to-transparent z-10 hidden md:block" />
+          <div className="absolute inset-y-0 right-0 w-48 bg-gradient-to-l from-white dark:from-[#080101] to-transparent z-10 hidden md:block" />
           {/* First marquee group */}
           <div className="animate-marquee whitespace-nowrap flex items-center">
             {partners.map((partner) => (

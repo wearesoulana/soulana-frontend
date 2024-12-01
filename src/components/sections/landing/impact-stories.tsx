@@ -9,42 +9,42 @@ const stories = [
     title: "Clean Water Initiative",
     impact: "10,000+ people served",
     amount: "$50,000",
-    image: "https://placehold.co/800x600",
+    image: "/images/impact/clean-water.jpg",
   },
   {
     id: 2,
     title: "Education for All",
     impact: "500 students supported",
     amount: "$75,000",
-    image: "https://placehold.co/800x600",
+    image: "/images/impact/education-project.jpg",
   },
   {
     id: 3,
     title: "Medical Aid Program",
     impact: "1,000+ patients treated",
     amount: "$100,000",
-    image: "https://placehold.co/800x600",
+    image: "/images/impact/medical-aid.jpg",
   },
   {
     id: 4,
     title: "Food Security Project",
     impact: "5,000 families fed",
     amount: "$85,000",
-    image: "https://placehold.co/800x600",
+    image: "/images/impact/food-security.jpg",
   },
   {
     id: 5,
     title: "Renewable Energy",
     impact: "20 communities powered",
     amount: "$120,000",
-    image: "https://placehold.co/800x600",
+    image: "/images/impact/renewable-energy.jpg",
   },
   {
     id: 6,
     title: "Wildlife Conservation",
     impact: "1,000 acres protected",
     amount: "$95,000",
-    image: "https://placehold.co/800x600",
+    image: "/images/impact/wildlife-conservation.jpg",
   }
 ];
 
@@ -60,7 +60,7 @@ export const ImpactStories = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 py-16 -mt-16 -mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 py-16 -mt-16 -mb-12 px-8">
         {stories.map((story) => (
           <div
             key={story.id}

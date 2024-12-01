@@ -10,7 +10,7 @@ const testimonials = [
     id: 1,
     name: "Sarah Johnson",
     role: "Nonprofit Director",
-    image: "https://placehold.co/100x100",
+    image: "/images/landing/sarah.jpg",
     content: "The Solana-powered donation platform has revolutionized how we receive support. Instant transactions and minimal fees mean more resources go directly to our cause.",
     rating: 5
   },
@@ -18,7 +18,7 @@ const testimonials = [
     id: 2,
     name: "Michael Chen",
     role: "Regular Donor",
-    image: "https://placehold.co/100x100",
+    image: "/images/landing/michael.jpg",
     content: "I love how transparent and fast the donation process is. Being able to track my contributions on the blockchain gives me complete confidence in where my money goes.",
     rating: 5
   },
@@ -26,7 +26,7 @@ const testimonials = [
     id: 3,
     name: "Emily Rodriguez",
     role: "Charity Organizer",
-    image: "https://placehold.co/100x100",
+    image: "/images/landing/emily.jpg",
     content: "The platform's user-friendly interface combined with Solana's speed has made fundraising so much more efficient. Our donors appreciate the seamless experience.",
     rating: 5
   }

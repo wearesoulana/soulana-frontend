@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/providers";
 import "./globals.css";
-import { WalletContextProvider } from "@/components/wallet-provider";
+import { WalletProvider } from "@/contexts/wallet-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -75,7 +75,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <WalletContextProvider>
+        <WalletProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -84,7 +84,7 @@ export default function RootLayout({
           >
             {children}
           </ThemeProvider>
-        </WalletContextProvider>
+        </WalletProvider>
       </body>
     </html>
   );
