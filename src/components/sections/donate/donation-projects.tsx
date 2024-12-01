@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
@@ -15,6 +16,8 @@ import {
 import { WalletButton } from "@/components/ui/wallet-button";
 import { Input } from "@/components/ui/input";
 import { useWallet } from "@/contexts/wallet-context";
+import { TransactionTracker } from "@/components/sections/how-it-works/donation-process/transaction-tracker";
+import { Loader2, Heart } from "lucide-react";
 
 // Blink authority public key
 
@@ -30,6 +33,8 @@ interface Project {
   raised: string;
   minDonation: number;
   wallet: PublicKey;
+  isNew?: boolean;
+  isUrgent?: boolean;
 }
 
 // Helper function to calculate progress percentage
@@ -53,13 +58,66 @@ const ProgressBadge = ({ progress }: { progress: number }) => {
   }
 
   return (
-    <div className={`absolute top-4 right-4 ${bgColor} rounded-full px-3 py-1 z-10`}>
+    <div className={`rounded-full px-3 py-1 ${bgColor}`}>
       <span className={`text-sm font-medium ${textColor}`}>
         {progress}% Funded
       </span>
     </div>
   );
 };
+
+// Status badge component
+const StatusBadge = ({ status }: { status: "started" | "completed" | "pending" | "failed" }) => {
+  const statusConfig = {
+    started: {
+      bg: "bg-blue-100 dark:bg-blue-900/30",
+      text: "text-blue-600 dark:text-blue-400",
+      label: "Started"
+    },
+    completed: {
+      bg: "bg-green-100 dark:bg-green-900/30",
+      text: "text-green-600 dark:text-green-400",
+      label: "Completed"
+    },
+    pending: {
+      bg: "bg-yellow-100 dark:bg-yellow-900/30",
+      text: "text-yellow-600 dark:text-yellow-400",
+      label: "Pending"
+    },
+    failed: {
+      bg: "bg-red-100 dark:bg-red-900/30",
+      text: "text-red-600 dark:text-red-400",
+      label: "Failed"
+    }
+  };
+
+  const config = statusConfig[status];
+
+  return (
+    <div className={`rounded-full px-3 py-1 ${config.bg}`}>
+      <span className={`text-sm font-medium ${config.text}`}>
+        {config.label}
+      </span>
+    </div>
+  );
+};
+
+// New and Urgent badges
+const NewBadge = () => (
+  <div className="rounded-full px-3 py-1 bg-green-100 dark:bg-green-900/30">
+    <span className="text-sm font-medium text-green-600 dark:text-green-400">
+      New
+    </span>
+  </div>
+);
+
+const UrgentBadge = () => (
+  <div className="rounded-full px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30">
+    <span className="text-sm font-medium text-yellow-600 dark:text-yellow-400">
+      Urgent
+    </span>
+  </div>
+);
 
 const projects: Project[] = [
   {
@@ -71,6 +129,7 @@ const projects: Project[] = [
     raised: "45 SOL",
     minDonation: 0.001,
     wallet: new PublicKey("F1rstn82GYYuWVPYBg7YKUZ2fZskDFg27ocXBx88pcgW"),
+    isNew: true,
   },
   {
     id: 2,
@@ -81,6 +140,7 @@ const projects: Project[] = [
     raised: "45 SOL",
     minDonation: 0.001,
     wallet: new PublicKey("F1rstn82GYYuWVPYBg7YKUZ2fZskDFg27ocXBx88pcgW"),
+    isUrgent: true,
   }
 ];
 
@@ -88,7 +148,6 @@ export function DonationProjects() {
   const { isConnected: connected, walletAddress } = useWallet();
   const [loading, setLoading] = useState<Record<number, boolean>>({});
   const [balance, setBalance] = useState<number | null>(null);
-  const [, setRecipientBalance] = useState<Record<string, number>>({});
   
   // Initialize donationAmounts with minimum donation amounts for each project
   const [donationAmounts, setDonationAmounts] = useState<Record<number, number>>(() => {
@@ -98,10 +157,10 @@ export function DonationProjects() {
     }, {} as Record<number, number>);
   });
 
-  // Wrap publicKey initialization in useMemo
+  // Convert walletAddress string to PublicKey when needed
   const publicKey = useMemo(() => 
     walletAddress ? new PublicKey(walletAddress) : null
-  , [walletAddress]); 
+  , [walletAddress]);
 
   // Update useEffect to use our wallet context
   useEffect(() => {
@@ -124,25 +183,19 @@ export function DonationProjects() {
     return () => clearInterval(intervalId);
   }, [connected, publicKey]);
 
-  useEffect(() => {
-    const fetchRecipientBalances = async () => {
-      try {
-        const balances = await Promise.all(
-          projects.map(async (project) => {
-            const balance = await connection.getBalance(project.wallet);
-            return [project.wallet.toBase58(), balance / LAMPORTS_PER_SOL];
-          })
-        );
-        setRecipientBalance(Object.fromEntries(balances));
-      } catch (error) {
-        console.error('Error fetching recipient balances:', error);
-      }
-    };
+  const handleAmountChange = (projectId: number, value: string) => {
+    const amount = Number.parseFloat(value);
+    const project = projects.find(p => p.id === projectId);
+    
+    if (!project) return;
 
-    fetchRecipientBalances();
-    const intervalId = setInterval(fetchRecipientBalances, 5000);
-    return () => clearInterval(intervalId);
-  }, []);
+    // Validate and update amount
+    if (!Number.isNaN(amount)) {
+      if (amount >= project.minDonation) {
+        setDonationAmounts(prev => ({ ...prev, [projectId]: amount }));
+      }
+    }
+  };
 
   const handleDonate = async (projectId: number) => {
     if (!connected || !publicKey) {
@@ -223,11 +276,44 @@ export function DonationProjects() {
         console.log('Transaction URL:', `https://explorer.solana.com/tx/${signature}?cluster=devnet`);
         toast.info("Transaction sent! Waiting for confirmation...");
 
+        const startingTransaction = {
+          signature: 'started',
+          amount: donationAmount,
+          timestamp: new Date(),
+          fromAddress: publicKey.toBase58(),
+          toAddress: project.wallet.toBase58(),
+          projectId: project.id,
+          projectTitle: project.title,
+          status: 'started' as const
+        };
+
+        const existingTransactions = JSON.parse(localStorage.getItem('donations') || '[]');
+        const updatedTransactions = [startingTransaction, ...existingTransactions].slice(0, 5);
+        localStorage.setItem('donations', JSON.stringify(updatedTransactions));
+        window.dispatchEvent(new CustomEvent('newDonation', { detail: updatedTransactions }));
+
         console.log('Waiting for confirmation...');
         const confirmation = await connection.confirmTransaction(signature);
 
+        // Find the current transaction and make it pending
+        const currentTransactionsPending = JSON.parse(localStorage.getItem('donations') || '[]');
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        const updatedTransactionsPending = currentTransactionsPending.map((tx: any) => 
+          tx.signature === 'started' ? { ...tx, signature, status: 'pending' as const } : tx
+        );
+        localStorage.setItem('donations', JSON.stringify(updatedTransactionsPending));
+        window.dispatchEvent(new CustomEvent('newDonation', { detail: updatedTransactionsPending }));
+
         if (confirmation?.value?.err) {
           console.log('Error: Transaction failed to confirm', confirmation.value.err);
+          // Update transaction status to failed
+          const currentTransactionsFailed = JSON.parse(localStorage.getItem('donations') || '[]');
+          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+          const updatedTransactionsFailed = currentTransactionsFailed.map((tx: any) => 
+            tx.signature === signature ? { ...tx, status: 'failed' as const } : tx
+          );
+          localStorage.setItem('donations', JSON.stringify(updatedTransactionsFailed));
+          window.dispatchEvent(new CustomEvent('newDonation', { detail: updatedTransactionsFailed }));
           throw new Error("Transaction failed to confirm");
         }
         
@@ -249,11 +335,18 @@ export function DonationProjects() {
           maxSupportedTransactionVersion: 0
         });
         
-        console.log('Transaction Info:', txInfo);
-        
         if (!txInfo) {
           throw new Error("Failed to fetch transaction info");
         }
+
+        // Update transaction status to confirmed
+        const currentTransactionsConfirmed = JSON.parse(localStorage.getItem('donations') || '[]');
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+        const updatedTransactionsConfirmed = currentTransactionsConfirmed.map((tx: any) => 
+          tx.signature === signature ? { ...tx, status: 'completed' as const } : tx
+        );
+        localStorage.setItem('donations', JSON.stringify(updatedTransactionsConfirmed));
+        window.dispatchEvent(new CustomEvent('newDonation', { detail: updatedTransactionsConfirmed }));
 
         toast.success(`Successfully donated ${donationAmount} SOL to ${project.title}!`);
         
@@ -278,29 +371,6 @@ export function DonationProjects() {
     }
   };
 
-  const handleAmountChange = (projectId: number, value: string) => {
-    const amount = Number.parseFloat(value);
-    const project = projects.find(p => p.id === projectId);
-    
-    if (!project) return;
-
-    // Validate and update amount
-    if (!Number.isNaN(amount)) {
-      if (amount >= project.minDonation) {
-        setDonationAmounts(prev => ({
-          ...prev,
-          [projectId]: amount
-        }));
-      } else {
-        setDonationAmounts(prev => ({
-          ...prev,
-          [projectId]: project.minDonation
-        }));
-        toast.error(`Minimum donation is ${project.minDonation} SOL`);
-      }
-    }
-  };
-
   const getButtonText = (projectId: number, connected: boolean, loading: boolean, balance: number | null): string => {
     if (loading) return "Processing...";
     if (!connected) return "Connect Wallet";
@@ -316,7 +386,7 @@ export function DonationProjects() {
         <h1 className="text-4xl font-bold text-red-950 dark:text-rose-50 text-center mb-4">
           Donate to Projects
         </h1>
-        <p className="text-red-800/80 dark:text-rose-100/80 text-center mb-4">
+        <p className="text-red-800/80 dark:text-rose-100/80 text-center mb-6">
           Choose a project to support and make your impact
         </p>
         
@@ -334,205 +404,109 @@ export function DonationProjects() {
                   Min donation: 0.001 SOL
                 </p>
               </div>
-
-              {/* Wallet Address */}
-              {/* <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
-                <div className="flex items-center justify-center gap-2">
-                  <p className="text-sm font-medium text-red-800/80 dark:text-rose-100/80">
-                    Wallet Address
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleCopyAddress}
-                    className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-md transition-colors"
-                    title="Copy full address"
-                  >
-                    <Copy className="h-4 w-4 text-red-800/60 dark:text-rose-100/60" />
-                  </button>
-                </div>
-                <p className="text-xs font-mono text-red-600/80 dark:text-rose-200/80 mt-1">
-                  {publicKey.toBase58()}
-                </p>
-              </div> */}
-
-              {/* Network Information */}
-              {/* <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
-                <p className="text-sm font-medium text-red-800/80 dark:text-rose-100/80">
-                  Network: Devnet
-                </p>
-                <p className="text-xs text-red-600/60 dark:text-rose-200/60">
-                  This is a test network for development
-                </p>
-              </div> */}
-
-              {/* Get Test SOL Instructions */}
-              {/* <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-lg space-y-2">
-                <p className="text-sm font-medium text-red-800/80 dark:text-rose-100/80">
-                  Need test SOL?
-                </p>
-                <div className="space-y-1">
-                  <p className="text-xs text-red-600/80 dark:text-rose-200/80">
-                    1. Install Solana CLI:
-                  </p>
-                  <code className="block text-xs font-mono bg-red-100/50 dark:bg-red-900/50 p-2 rounded">
-                    sh -c "$(curl -sSfL https://release.solana.com/v1.17.9/install)"
-                  </code>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-xs text-red-600/80 dark:text-rose-200/80">
-                    2. Get free devnet SOL:
-                  </p>
-                  <div className="relative">
-                    <code className="block text-xs font-mono bg-red-100/50 dark:bg-red-900/50 p-2 rounded">
-                      solana airdrop 2 {publicKey.toBase58()} --url devnet
-                    </code>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          `solana airdrop 2 ${publicKey.toBase58()} --url devnet`
-                        );
-                        toast.success("Command copied to clipboard!");
-                      }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-red-200/50 dark:hover:bg-red-800/50 rounded"
-                      title="Copy command"
-                    >
-                      <Copy className="h-3 w-3 text-red-800/60 dark:text-rose-100/60" />
-                    </button>
-                  </div>
-                </div>
-                <p className="text-xs text-red-600/60 dark:text-rose-200/60">
-                  You can request up to 2 SOL every few seconds
-                </p>
-              </div> */}
-
-              {/* Quick Links */}
-              {/* <div className="flex gap-2 justify-center text-xs">
-                <a
-                  href="https://docs.solana.com/cli/install-solana-cli-tools"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                >
-                  CLI Docs
-                </a>
-                <span className="text-red-300">•</span>
-                <a
-                  href="https://explorer.solana.com/?cluster=devnet"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                >
-                  Explorer
-                </a>
-                <span className="text-red-300">•</span>
-                <a
-                  href="https://faucet.solana.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
-                >
-                  Faucet
-                </a>
-              </div> */}
             </div>
           )}
         </div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 gap-8">
-          {projects.map((project) => (
-            <div 
-              key={project.id}
-              className="relative bg-white/30 dark:bg-black/30 rounded-2xl border border-red-200 dark:border-red-900 p-6"
-            >
-              <ProgressBadge progress={calculateProgress(project.raised, project.target)} />
-              
-              {/* Project Content */}
-              <div className="flex flex-col md:flex-row gap-6">
-                {/* Project Image */}
-                <div className="relative w-full md:w-1/3 h-48 md:h-auto">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="rounded-xl object-cover"
-                  />
-                </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Projects Column - Takes up 2 columns */}
+          <div className="lg:col-span-2 space-y-8">
+            {projects.map((project) => (
+              <div
+                key={project.id}
+                className="bg-white/30 dark:bg-black/30 rounded-2xl border border-red-200 dark:border-red-900 p-6 backdrop-blur-sm"
+              >
+                {/* Project content */}
+                <div className="flex flex-col md:flex-row gap-6">
+                  <div className="w-full md:w-1/3 space-y-3">
+                    <div className="relative aspect-[4/3] rounded-lg overflow-hidden">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    {/* Badges */}
+                    <div className="flex flex-wrap gap-2">
+                      {project.isNew && <NewBadge />}
+                      {project.isUrgent && <UrgentBadge />}
+                      <StatusBadge status="started" />
+                      <ProgressBadge progress={calculateProgress(project.raised, project.target)} />
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 space-y-4">
+                    <div>
+                      <h3 className="text-xl font-semibold text-red-950 dark:text-rose-50">
+                        {project.title}
+                      </h3>
+                      <p className="mt-2 text-red-800/80 dark:text-rose-100/80">
+                        {project.description}
+                      </p>
+                    </div>
 
-                {/* Project Details */}
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <h3 className="text-2xl font-bold text-red-950 dark:text-rose-50 mb-2">
-                      {project.title}
-                    </h3>
-                    <p className="text-red-800/80 dark:text-rose-100/80 mb-4">
-                      {project.description}
-                    </p>
-                    
-                    {/* Progress Section */}
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-red-600 dark:text-red-400">
-                          Target: {project.target}
-                        </span>
-                        <span className="text-red-600 dark:text-red-400">
-                          Raised: {project.raised}
-                        </span>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-red-800/60 dark:text-rose-100/60">Raised</span>
+                        <span className="font-medium text-red-950 dark:text-rose-50">{project.raised}</span>
                       </div>
-                      <div className="w-full bg-red-100 dark:bg-red-900/30 rounded-full h-2">
+                      <div className="h-2 bg-red-100 dark:bg-red-950/50 rounded-full overflow-hidden">
                         <div 
-                          className="bg-red-600 dark:bg-red-500 h-2 rounded-full transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-red-500 to-red-600 dark:from-red-600 dark:to-red-500"
                           style={{ width: `${calculateProgress(project.raised, project.target)}%` }}
                         />
                       </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-red-800/60 dark:text-rose-100/60">Target</span>
+                        <span className="font-medium text-red-950 dark:text-rose-50">{project.target}</span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Donation Section */}
-                  <div className="space-y-2 mt-4">
-                    <div className="flex justify-between items-center text-sm text-red-800/60 dark:text-rose-100/60">
-                      <span>Minimum donation: {project.minDonation} SOL</span>
-                      <span className="font-mono">
-                        Wallet: {project.wallet.toBase58().slice(0, 4)}...{project.wallet.toBase58().slice(-4)}
-                      </span>
-                    </div>
-                    
-                    {/* Amount Input */}
-                    <div className="flex gap-2">
-                      <Input
-                        type="number"
-                        min={project.minDonation}
-                        step={0.001}
-                        value={donationAmounts[project.id]}
-                        onChange={(e) => handleAmountChange(project.id, e.target.value)}
-                        placeholder={`Min: ${project.minDonation} SOL`}
-                        className="flex-1"
-                      />
-                      <Button 
-                        className="bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"
+                    <div className="pt-4 flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <Input
+                          type="number"
+                          min={project.minDonation}
+                          step={0.001}
+                          value={donationAmounts[project.id] || project.minDonation}
+                          onChange={(e) => handleAmountChange(project.id, e.target.value)}
+                          className="w-full"
+                          placeholder="Amount in SOL"
+                        />
+                        <p className="mt-1 text-xs text-red-800/60 dark:text-rose-100/60">
+                          Minimum donation: {project.minDonation} SOL
+                        </p>
+                      </div>
+                      <Button
+                        className="bg-red-600 hover:bg-red-500 text-white dark:bg-red-500 dark:hover:bg-red-400"
+                        disabled={!connected || loading[project.id]}
                         onClick={() => handleDonate(project.id)}
-                        disabled={
-                          !connected || 
-                          loading[project.id] || 
-                          balance === null || 
-                          !donationAmounts[project.id] ||
-                          (balance < donationAmounts[project.id])
-                        }
                       >
-                        {getButtonText(
-                          project.id, 
-                          connected, 
-                          loading[project.id], 
-                          balance
+                        {loading[project.id] ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <Heart className="mr-2 h-4 w-4" />
+                            {getButtonText(project.id, connected, loading[project.id], balance)}
+                          </>
                         )}
                       </Button>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+
+          {/* Transaction Tracker Column */}
+          <div className="lg:sticky lg:top-24 lg:h-fit">
+            <TransactionTracker />
+          </div>
         </div>
       </div>
     </section>
