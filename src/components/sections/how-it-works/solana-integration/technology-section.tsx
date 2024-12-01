@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const features = [
   {
@@ -6,9 +7,10 @@ const features = [
     description: "Solana's revolutionary Blink technology enables near-instant transaction finality.",
     details: [
       "Sub-second confirmation times",
-      "Parallel transaction processing",
+      "Parallel transaction processing", 
       "Scalable architecture"
-    ]
+    ],
+    image: "/images/solana-integration/blinks.png"
   },
   {
     title: "Solana Tunnels",
@@ -17,7 +19,8 @@ const features = [
       "Automated disbursement",
       "Transparent tracking",
       "Programmable logic"
-    ]
+    ], 
+    image: "/images/solana-integration/solanawormhole.webp"
   },
   {
     title: "Cross-Chain Bridge",
@@ -26,7 +29,8 @@ const features = [
       "Multi-chain support",
       "Unified experience",
       "Broad accessibility"
-    ]
+    ],
+    image: "/images/solana-integration/crosschainbridge.png"
   }
 ];
 
@@ -65,7 +69,14 @@ export const TechnologySection = () => {
               </ul>
             </div>
             <div className="flex-1 w-full aspect-video bg-white/30 dark:bg-black/30 rounded-2xl border border-red-200 dark:border-red-900 p-8">
-              <div className="w-full h-full rounded-xl bg-gradient-to-br from-red-100 to-red-50 dark:from-red-900/20 dark:to-red-800/20" />
+              <div className="relative w-full h-full rounded-xl bg-gradient-to-br from-red-100 to-red-50 dark:from-red-900/20 dark:to-red-800/20 overflow-hidden">
+                <Image
+                  src={feature.image}
+                  alt={feature.title}
+                  fill
+                  className="object-contain p-4"
+                />
+              </div>
             </div>
           </div>
         ))}

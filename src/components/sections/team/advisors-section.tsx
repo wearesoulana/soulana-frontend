@@ -9,19 +9,19 @@ const advisors = [
     image: "/images/advisors/Anatoly_Yakovenko.jpg",
     bio: "Leading researcher in blockchain technology and social impact.",
     social: {
-      twitter: "#",
-      linkedin: "#"
+      twitter: "https://twitter.com/aeyakovenko?lang=en",
+      linkedin: "https://www.linkedin.com/in/anatoly-yakovenko"
     }
   },
   {
     id: 2,
-    name: "James Wilson",
-    role: "Nonprofit Advisor",
-    image: "/team/placeholder.jpg",
-    bio: "Former CEO of major charitable foundation, 20+ years experience.",
+    name: "Veli Uysal",
+    role: "Turkey Rust Community Owner",
+    image: "/images/advisors/Veli_Uysal.jpg",
+    bio: "The man who increased the number of crabs in Turkey. 🦀🦀🦀",
     social: {
-      twitter: "#",
-      linkedin: "#"
+      twitter: "https://twitter.com/0xVeliUysal",
+      linkedin: "https://tr.linkedin.com/in/veliuysal"
     }
   }
 ];

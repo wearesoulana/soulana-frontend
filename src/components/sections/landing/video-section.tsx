@@ -10,7 +10,7 @@ export const VideoSection = () => {
   };
 
   return (
-    <div className="mt-32 text-center">
+    <div className="mt-32 text-center" id="how-it-works">
       <div className="max-w-3xl mx-auto mb-16">
         <h2 className="text-3xl sm:text-4xl font-bold text-red-950 dark:text-rose-50 mb-6">
           See How It Works
