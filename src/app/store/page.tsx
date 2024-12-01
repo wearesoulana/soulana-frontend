@@ -20,59 +20,50 @@ type Product = {
 
 const products: Product[] = [
   {
-    id: "tshirt-black",
-    name: "Soulana T-Shirt",
-    description: "Premium cotton t-shirt with embroidered logo",
-    price: 500, // 500 tokens
-    image: "/images/store/tshirt.png",
+    id: "tshirt-white",
+    name: "White Soulana T-Shirt",
+    description: "Premium cotton t-shirt in classic white with embroidered Soulana logo",
+    price: 500,
+    image: "/images/store/tshirt.jpg",
     category: "clothing",
     inStock: true,
   },
   {
-    id: "hoodie-gray",
-    name: "Developer Hoodie",
-    description: "Comfortable hoodie with blockchain design",
+    id: "hoodie-white",
+    name: "White Soulana Hoodie",
+    description: "Cozy white hoodie with minimalist Soulana design",
     price: 1000,
-    image: "/images/store/hoodie.png",
+    image: "/images/store/hoodie.jpg",
     category: "clothing",
     inStock: true,
   },
   {
-    id: "cap-navy",
-    name: "Classic Cap",
-    description: "Adjustable cap with embroidered logo",
+    id: "hat-white",
+    name: "White Soulana Hat",
+    description: "Stylish white cap with embroidered Soulana logo",
     price: 300,
-    image: "/images/store/cap.png",
+    image: "/images/store/cap.jpg",
     category: "accessories",
     inStock: true,
   },
   {
-    id: "bottle-steel",
-    name: "Water Bottle",
-    description: "Stainless steel bottle with logo",
+    id: "cup-white",
+    name: "White Soulana Cup",
+    description: "Elegant white ceramic cup with Soulana branding",
     price: 400,
-    image: "/images/store/bottle.png",
+    image: "/images/store/cup.jpg",
     category: "accessories",
     inStock: true,
   },
   {
-    id: "sticker-pack",
-    name: "Sticker Pack",
-    description: "Set of 5 vinyl stickers",
-    price: 100,
-    image: "/images/store/stickers.png",
-    category: "collectibles",
+    id: "notebook-white",
+    name: "White Soulana Notebook",
+    description: "Premium white notebook with Soulana logo and high-quality paper",
+    price: 200,
+    image: "/images/store/notebook.jpg",
+    category: "accessories",
     inStock: true,
-  },
-  {
-    id: "nft-badge",
-    name: "Limited NFT Badge",
-    description: "Exclusive NFT badge for token holders",
-    price: 2000,
-    image: "/images/store/nft-badge.png",
-    category: "collectibles",
-    inStock: true,
-  },
+  }
 ];
 
 export default function StorePage() {
@@ -86,8 +77,7 @@ export default function StorePage() {
   const categories = [
     { id: "all", name: "All Items" },
     { id: "clothing", name: "Clothing" },
-    { id: "accessories", name: "Accessories" },
-    { id: "collectibles", name: "Collectibles" },
+    { id: "accessories", name: "Accessories" }
   ];
 
   return (
