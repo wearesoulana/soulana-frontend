@@ -165,7 +165,7 @@ export function Navbar() {
                   alt="Logo" 
                   width={40}
                   height={40}
-                  className="transition-transform duration-300 group-hover:scale-110 invert dark:invert-0"
+                  className="transition-transform duration-300 group-hover:scale-110 invert dark:invert-0 w-auto h-auto"
                   priority
                 />
               </div>
@@ -342,7 +342,7 @@ export function Navbar() {
                   alt="Logo" 
                   width={40}
                   height={40}
-                  className="transition-transform duration-300 group-hover:scale-110 invert dark:invert-0"
+                  className="transition-transform duration-300 group-hover:scale-110 invert dark:invert-0 w-auto h-auto"
                   priority
                 />
               </div>

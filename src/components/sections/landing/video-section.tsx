@@ -1,7 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+import { useState } from "react";
 
 export const VideoSection = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayVideo = () => {
+    setIsPlaying(true);
+  };
+
   return (
     <div className="mt-32 text-center">
       <div className="max-w-3xl mx-auto mb-16">
@@ -15,17 +22,33 @@ export const VideoSection = () => {
 
       <div className="aspect-video max-w-4xl mx-auto rounded-2xl overflow-hidden bg-gradient-to-br from-red-100 via-white to-red-50 dark:from-black/30 dark:via-black/20 dark:to-black/30 border border-red-200/50 dark:border-red-900/50 group will-change-transform hover:scale-[1.02] transition-all duration-300 shadow-lg hover:shadow-xl">
         <div className="w-full h-full flex items-center justify-center relative">
-          <div className="absolute inset-0 bg-gradient-to-t from-red-950/50 via-transparent to-transparent dark:from-black/60" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/5 via-transparent to-transparent dark:from-red-500/10" />
-          
-          <Button 
-            size="lg"
-            variant="outline" 
-            className="relative z-10 gap-2 bg-white/80 dark:bg-white/10 backdrop-blur-sm border-white/50 dark:border-white/20 text-red-700 dark:text-white hover:bg-white/90 dark:hover:bg-white/20 hover:border-white/60 dark:hover:border-white/30 group-hover:scale-110 transition-all duration-300 shadow-lg"
-          >
-            <Play className="h-6 w-6" />
-            Watch Demo
-          </Button>
+          {!isPlaying ? (
+            <>
+              <div className="absolute inset-0 bg-gradient-to-t from-red-950/50 via-transparent to-transparent dark:from-black/60" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-red-500/5 via-transparent to-transparent dark:from-red-500/10" />
+              
+              <Button 
+                size="lg"
+                variant="outline" 
+                onClick={handlePlayVideo}
+                className="relative z-10 gap-2 bg-white/80 dark:bg-white/10 backdrop-blur-sm border-white/50 dark:border-white/20 text-red-700 dark:text-white hover:bg-white/90 dark:hover:bg-white/20 hover:border-white/60 dark:hover:border-white/30 group-hover:scale-110 transition-all duration-300 shadow-lg"
+              >
+                <Play className="h-6 w-6" />
+                Watch Demo
+              </Button>
+            </>
+          ) : (
+            <video
+              className="w-full h-full object-cover"
+              playsInline
+              muted // Add this
+              controls
+              src="/demo.mp4"
+              aria-label="Platform demonstration video"
+            >
+              Your browser does not support the video tag.
+            </video>
+          )}
         </div>
       </div>
 

@@ -35,7 +35,7 @@ A decentralized donation platform built on Solana blockchain, enabling transpare
 ### Security
 - Secure wallet connections
 - Transaction verification
-- Smart contract safety
+- Solana Tunnels
 - Data encryption
 - Privacy protection
 
@@ -53,8 +53,8 @@ A decentralized donation platform built on Solana blockchain, enabling transpare
 - Solana Web3.js
 - Wallet Adapter
 - Transaction Processing
-- Smart Contracts
-
+- Solana Tunnels
+- Cross-Chain Bridge
 ### Development
 - ESLint
 - Prettier
