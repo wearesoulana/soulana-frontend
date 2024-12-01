@@ -104,7 +104,7 @@ export default function DonatePage() {
             className="grid grid-cols-1 md:grid-cols-3 gap-8 relative"
             variants={staggerContainer}
           >
-            <div className="hidden md:block absolute top-[4rem] left-[calc(17%+1rem)] right-[calc(17%+1rem)] h-0.5 bg-gradient-to-r from-red-200 via-red-300 to-red-200 dark:from-red-800 dark:via-red-700 dark:to-red-800" />
+            <div className="hidden md:block absolute top-[3.5rem] left-[calc(17%+1rem)] right-[calc(17%+1rem)] h-0.5 bg-gradient-to-r from-red-200 via-red-300 to-red-200 dark:from-red-800 dark:via-red-700 dark:to-red-800" />
             {donationSteps.map((step, index) => (
               <motion.div 
                 key={step.id} 
