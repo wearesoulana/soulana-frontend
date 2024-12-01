@@ -1,4 +1,6 @@
-import type { Metadata } from "next";
+"use client";
+
+import { motion } from "framer-motion";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import {
@@ -8,27 +10,68 @@ import {
   CTASection
 } from "@/components/sections/how-it-works/solana-integration";
 
-export const metadata: Metadata = {
-  title: "Solana Integration | Soulana",
-  description: "Discover how we leverage Solana blockchain for fast, secure, and cost-effective charitable donations.",
-  keywords: ["solana", "blockchain", "integration", "crypto donation", "technology"],
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.3,
+      delayChildren: 0.1
+    }
+  }
 };
 
-// Force page to be statically rendered
-export const dynamic = "force-static";
-export const revalidate = false;
+const sectionVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 30,
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.21, 0.45, 0.32, 0.9]
+    }
+  }
+};
 
 export default function SolanaIntegrationPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-rose-50 via-white to-rose-50/50 dark:from-red-950 dark:via-black dark:to-red-950/50 transition-all duration-300">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-20">
-        <HeroSection />
-        <BenefitsSection />
-        <TechnologySection />
-        <CTASection />
-      </main>
+      <motion.main 
+        className="container mx-auto px-4 py-20"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <motion.div variants={sectionVariants}>
+          <HeroSection />
+        </motion.div>
+
+        <motion.div 
+          variants={sectionVariants}
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <BenefitsSection />
+        </motion.div>
+
+        <motion.div 
+          variants={sectionVariants}
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <TechnologySection />
+        </motion.div>
+
+        <motion.div 
+          variants={sectionVariants}
+          viewport={{ once: true, margin: "-100px" }}
+        >
+          <CTASection />
+        </motion.div>
+      </motion.main>
 
       <Footer />
     </div>
