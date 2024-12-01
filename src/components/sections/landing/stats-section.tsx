@@ -1,3 +1,5 @@
+"use client";
+
 import { Heart, Shield, Clock } from "lucide-react";
 
 export const StatsSection = () => {

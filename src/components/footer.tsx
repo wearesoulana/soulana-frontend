@@ -1,3 +1,6 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Facebook, Twitter, Linkedin, Instagram } from "lucide-react";
 
@@ -57,6 +60,12 @@ const footerLinks: FooterLinks = {
 };
 
 export function Footer() {
+  const [year, setYear] = useState("");
+
+  useEffect(() => {
+    setYear(new Date().getFullYear().toString());
+  }, []);
+
   return (
     <footer className="bg-white/50 dark:bg-black/50 border-t border-border mt-auto">
       <div className="container mx-auto px-4 py-12">
@@ -96,7 +105,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-red-800/60 dark:text-rose-100/60">
-              © {new Date().getFullYear()} Soulana. All rights reserved.
+              © {year} Soulana. All rights reserved.
             </p>
             <div className="flex flex-wrap items-center gap-4 text-sm">
               <Link

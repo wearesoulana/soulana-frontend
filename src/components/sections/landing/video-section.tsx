@@ -1,13 +1,24 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export const VideoSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handlePlayVideo = () => {
     setIsPlaying(true);
   };
+
+  if (!isMounted) {
+    return null; // Return null on server-side
+  }
 
   return (
     <div className="mt-32 text-center" id="how-it-works">
@@ -41,7 +52,8 @@ export const VideoSection = () => {
             <video
               className="w-full h-full object-cover"
               playsInline
-              muted // Add this
+              autoPlay
+              muted
               controls
               src="/demo.mp4"
               aria-label="Platform demonstration video"
