@@ -2,9 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Gift } from "lucide-react";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export const CTASection = () => {
+  const router = useRouter();
+  
   return (
     <section className="mt-32">
       <div className="relative overflow-hidden rounded-2xl">

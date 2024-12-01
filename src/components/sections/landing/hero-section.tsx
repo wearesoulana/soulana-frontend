@@ -2,9 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play } from "lucide-react";
-import router from "next/router";
+import { useRouter } from "next/navigation";
 
 export const HeroSection = () => {
+  const router = useRouter();
+
   return (
     <div className="flex flex-col items-center text-center gap-8 max-w-3xl mx-auto mt-16">
       <h1 className="text-5xl sm:text-7xl font-bold tracking-tight text-red-950 dark:text-rose-50 leading-tight">
@@ -32,6 +34,7 @@ export const HeroSection = () => {
           size="lg" 
           variant="outline"
           className="gap-2 border-red-300 dark:border-red-800 text-red-950 dark:text-rose-50 hover:bg-red-100/20 dark:hover:bg-red-950/20 transition-all duration-300 hover:scale-105"
+          onClick={() => router.push('#how-it-works')}
         >
           Watch Demo
           <Play className="h-4 w-4" />

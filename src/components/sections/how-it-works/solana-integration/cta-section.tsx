@@ -1,8 +1,11 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Coins } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const CTASection = () => {
+  const router = useRouter();
+
   return (
     <section className="mt-32">
       <div className="relative overflow-hidden rounded-2xl">
@@ -35,6 +38,7 @@ export const CTASection = () => {
             <Button 
               size="lg" 
               className="bg-red-600 hover:bg-red-500 text-white dark:bg-red-500 dark:text-white dark:hover:bg-red-400 hover:scale-105 transition-all duration-300 group shadow-lg hover:shadow-xl"
+              onClick={() => router.push('/donate')}
             >
               Connect Wallet
               <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -43,6 +47,7 @@ export const CTASection = () => {
               size="lg" 
               variant="outline" 
               className="border-red-600 text-red-600 hover:bg-red-50 dark:border-red-500 dark:text-rose-50 dark:hover:bg-red-500/10 hover:scale-105 transition-all duration-300"
+              onClick={() => router.push('/how-it-works/donation-process')}
             >
               Learn More
             </Button>
