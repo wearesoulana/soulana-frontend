@@ -37,5 +37,5 @@ export default function MissionLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return children;
 } 
