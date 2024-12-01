@@ -1,196 +1,251 @@
 import {
-  createPostResponse,
-  createActionHeaders,
-  type ActionPostResponse,
-  type ActionGetResponse,
-  type ActionPostRequest,
-} from '@solana/actions';
+	createPostResponse,
+	createActionHeaders,
+	type ActionPostResponse,
+	type ActionGetResponse,
+	type LinkedAction,
+} from "@solana/actions";
 import {
-  clusterApiUrl,
-  Connection,
-  LAMPORTS_PER_SOL,
-  PublicKey,
-  Keypair,
-  SystemProgram,
-  Transaction,
-  sendAndConfirmTransaction,
-} from '@solana/web3.js';
+	clusterApiUrl,
+	Connection,
+	LAMPORTS_PER_SOL,
+	PublicKey,
+	SystemProgram,
+	Transaction,
+} from "@solana/web3.js";
 
 import "dotenv/config";
-import { getKeypairFromEnvironment } from "@solana-developers/helpers";
- 
-const keypair = getKeypairFromEnvironment("SECRET_KEY");
 
-const senderSecretKey_ = keypair.secretKey;
 const headers = createActionHeaders();
-const icon_ = 'https://i.ibb.co/Jmth0hm/educhainscholar.png';
+
+// Add this interface at the top of the file with other imports
+interface DonationRequest {
+	id: number;
+	account: string;
+	amount: string;
+	receiverWallet: string;
+}
+
+interface Project {
+	id: number;
+	title: string;
+	description: string;
+	image: string;
+	target: string;
+	raised: string;
+	minDonation: number;
+	wallet: PublicKey;
+	actions: {
+		type: LinkedAction["type"];
+		label: string;
+		href: (baseHref: string, id: number) => string;
+		parameters: {
+			name: string;
+			label: string;
+			required: boolean;
+		}[];
+	}[];
+}
+
+const projects: Project[] = [
+	{
+		id: 1,
+		title: "EduChain Scholarships",
+		description:
+			"Scholarship support for students seeking blockchain technology education.",
+		image: "https://i.ibb.co/x81s9mN/educhainscholar.png",
+		target: "100 SOL",
+		raised: "45 SOL",
+		minDonation: 0.001,
+		wallet: new PublicKey("F1rstn82GYYuWVPYBg7YKUZ2fZskDFg27ocXBx88pcgW"),
+		actions: [
+			{
+				type: "transaction" as const,
+				label: "Send",
+				href: (baseHref: string, id: number) =>
+					`${baseHref}id=${id}&amount={amount}`,
+				parameters: [
+					{
+						name: "amount",
+						label: "Amount",
+						required: true,
+					},
+				],
+			},
+		],
+	},
+	{
+		id: 2,
+		title: "GreenSol Reforestation",
+		description: "Support reforestation efforts to combat climate change.",
+		image: "https://i.ibb.co/7GHVvwP/greensolrefores.png",
+		target: "200 SOL",
+		raised: "45 SOL",
+		minDonation: 0.001,
+		wallet: new PublicKey("F1rstn82GYYuWVPYBg7YKUZ2fZskDFg27ocXBx88pcgW"),
+		actions: [
+			{
+				type: "transaction" as const,
+				label: "Send",
+				href: (baseHref: string, id: number) =>
+					`${baseHref}id=${id}&amount={amount}`,
+				parameters: [
+					{
+						name: "amount",
+						label: "Amount",
+						required: true,
+					},
+				],
+			},
+		],
+	},
+];
 
 export const GET = async (req: Request) => {
-  try {
-    const requestUrl = new URL(req.url);
+	try {
+		const requestUrl = new URL(req.url);
+		const projectId = requestUrl.searchParams.get("id");
 
-    const baseHref = new URL(
-      "/api/blink-chain?",
-      requestUrl.origin,
-    ).toString();
-    const payload: ActionGetResponse = {
-      type: 'action',
-      title: 'EduChain Scholarships',
-      icon: icon_,
-      description:
-        'For kids that live in the future, give them their future.',
-      label: 'Transfer', // this value will be ignored since links.actions exists
-      links: {
-        actions: [
-          {
-            type: "transaction",
-            label: 'Send', // button text
-            href: `${baseHref}receiverWallet={receiverWallet}`, // this href will have a text input
-            parameters: [
-              {
-                name: 'receiverWallet', // parameter name in the href above
-                label: 'Receiver Wallet', // placeholder of the text input
-                required: true,
-              },
-            ],
-          }
-        ],
-      },
-    };
+		// Find the project by ID
+		const project = projects.find((p) => p.id === Number(projectId));
+		if (!project) {
+			throw new Error("Invalid project ID");
+		}
 
-    return Response.json(payload, {
-      headers,
-    });
-  } catch (err) {
-    console.log(err);
-    let message = 'An unknown error occurred';
-    if (typeof err === 'string') message = err;
-    return new Response(message, {
-      status: 400,
-      headers,
-    });
-  }
+		const baseHref = new URL("/api/blink-chain?", requestUrl.origin).toString();
+		const payload: ActionGetResponse = {
+			type: "action",
+			title: project.title,
+			icon: project.image,
+			description: project.description,
+			label: "Transfer",
+			links: {
+				actions: project.actions.map(
+					(action) =>
+						({
+							type: action.type,
+							label: action.label,
+							href: action.href(baseHref, project.id),
+							parameters: action.parameters,
+						}) as LinkedAction,
+				),
+			},
+		};
+
+		return Response.json(payload, {
+			headers,
+		});
+	} catch (err) {
+		console.log(err);
+		let message = "An unknown error occurred";
+		if (typeof err === "string") message = err;
+		return new Response(message, {
+			status: 400,
+			headers,
+		});
+	}
 };
 
 // DO NOT FORGET TO INCLUDE THE OPTIONS HTTP METHOD
 // THIS WILL ENSURE CORS WORKS FOR BLINKS
-export const OPTIONS = async (req: Request) => {
-  return new Response(null, { headers });
+export const OPTIONS = async () => {
+	return new Response(null, { headers });
 };
 
 export const POST = async (req: Request) => {
-  try {
-    const requestUrl = new URL(req.url);
-    const {toPubkey } = validatedQueryParams(requestUrl);
-    const body: ActionPostRequest = await req.json();
+	try {
+		const body = (await req.json()) as DonationRequest;
 
-    // validate the client provided input
-    let account: PublicKey;
-    const senderSecretKey = Uint8Array.from(senderSecretKey_);
-    const senderWallet = Keypair.fromSecretKey(senderSecretKey);
-    try {
-      account = new PublicKey(body.account);
-    } catch (err) {
-      return new Response('Invalid "account" provided', {
-        status: 400,
-        headers,
-      });
-    }
-    // const connection = new Connection(
-    //   // biome-ignore lint/style/noNonNullAssertion: <explanation>
-    //   process.env.SOLANA_RPC! || clusterApiUrl('mainnet-beta'),
-    // );
+		// Validate the client provided input
+		let account: PublicKey;
 
-    const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
+		try {
+			account = new PublicKey(body.account);
+		} catch {
+			return new Response('Invalid "account" provided', {
+				status: 400,
+				headers,
+			});
+		}
 
-    // ensure the receiving account will be rent exempt
-    const minimumBalance = await connection.getMinimumBalanceForRentExemption(
-      0, // note: simple accounts that just store native SOL have 0 bytes of data
-    );
-    if (0.001 * LAMPORTS_PER_SOL < minimumBalance) {
-      throw `account may not be rent exempt: ${toPubkey.toBase58()}`;
-    }
+		// Find the project by ID
+		const project = projects.find((p) => p.id === body.id);
+		if (!project) {
+			return new Response("Invalid project ID", {
+				status: 400,
+				headers,
+			});
+		}
 
-    const solphi: PublicKey = new PublicKey(
-      '79AVUqNfDDHRVNTCvb37bEhv8mi9GrUB3hE1nCsqscxV',
-    );
-    const transferSolInstruction = SystemProgram.transfer({
-      fromPubkey: account,
-      toPubkey: solphi,
-      lamports: 0.0003 * LAMPORTS_PER_SOL, // reklam ücreti (kesinti, komisyon)
-    });
+		// Validate donation amount
+		const donationAmount = Number.parseFloat(body.amount);
+		if (Number.isNaN(donationAmount)) {
+			return new Response("Invalid donation amount", {
+				status: 400,
+				headers,
+			});
+		}
 
+		// Check minimum donation amount
+		if (donationAmount < project.minDonation) {
+			return new Response(
+				`Donation amount must be at least ${project.minDonation} SOL`,
+				{
+					status: 400,
+					headers,
+				},
+			);
+		}
 
-    const transferSolInstruction2 = SystemProgram.transfer({
-      fromPubkey: senderWallet.publicKey,
-      toPubkey: toPubkey,
-      lamports: 0.0031 * LAMPORTS_PER_SOL, // kullanıcının claim ettiği tutar
-    });
+		const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+		const donationLamports = donationAmount * LAMPORTS_PER_SOL;
 
-    const { blockhash, lastValidBlockHeight } =
-    await connection.getLatestBlockhash();
+		// Check if sender has enough balance
+		const senderBalance = await connection.getBalance(account);
+		if (senderBalance < donationLamports) {
+			return new Response("Insufficient balance for donation", {
+				status: 400,
+				headers,
+			});
+		}
 
-    const transaction = new Transaction({
-      feePayer: senderWallet.publicKey,
-      blockhash,
-      lastValidBlockHeight,
-    }).add(transferSolInstruction,transferSolInstruction2);
+		// Create donation transaction
+		const donationInstruction = SystemProgram.transfer({
+			fromPubkey: account,
+			toPubkey: project.wallet, // Use project wallet directly
+			lamports: donationLamports,
+		});
 
-    (async () => {
-      try {
-        const signature = await sendAndConfirmTransaction(
-          connection,
-          transaction,
-          [senderWallet]
-        );
-        console.log('Transaction confirmed with signature', signature);
-      } catch (error) {
-        console.error('Transaction failed', error);
-      }
-    })();
+		// Get latest blockhash
+		const { blockhash, lastValidBlockHeight } =
+			await connection.getLatestBlockhash();
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+		// Create transaction
+		const transaction = new Transaction({
+			feePayer: account, // Set fee payer to sender
+			blockhash,
+			lastValidBlockHeight,
+		}).add(donationInstruction);
 
-    const payload: ActionPostResponse = await createPostResponse({
-      fields: {
-        type: "transaction",
-        transaction,
-        message: "Check your wallet for the transaction",
-      },
-      // note: no additional signers are needed
-      // signers: [],
-    });
-    return Response.json(payload, {
-      headers,
-    });
-  } catch (err) {
-    console.log(err);
-    let message = 'An unknown error occurred';
-    if (typeof err === 'string') message = err;
-    return new Response(message, {
-      status: 400,
-      headers,
-    });
-  }
+		// Create response
+		const payload: ActionPostResponse = await createPostResponse({
+			fields: {
+				type: "transaction",
+				transaction,
+				message: `Donating ${donationAmount} SOL to ${project.title}`,
+			},
+		});
+
+		return Response.json(payload, {
+			headers,
+		});
+	} catch (err) {
+		console.log(err);
+		let message = "An unknown error occurred";
+		if (typeof err === "string") message = err;
+		return new Response(message, {
+			status: 400,
+			headers,
+		});
+	}
 };
-
-
-function validatedQueryParams(requestUrl: URL) {
-  let toPubkey: PublicKey = new PublicKey(
-    '79AVUqNfDDHRVNTCvb37bEhv8mi9GrUB3hE1nCsqscxV', // reklam verenden alınan komisyonun gidecği cüzdan adresi
-  );
-  // icon_ = 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/640px-Bitcoin.svg.png';
-
-  try {
-    const receiverWallet = requestUrl.searchParams.get('receiverWallet');
-    if (receiverWallet) {
-      toPubkey = new PublicKey(receiverWallet);
-    }
-  } catch (err) {
-    throw 'Invalid input query parameter: receiverWallet';
-  }
-
-  return {
-    toPubkey,
-  };
-}
