@@ -26,7 +26,7 @@ const motivations = [
     title: "Innovation for Good",
     description: "Leveraging blockchain technology to create a more efficient and transparent charitable giving ecosystem.",
     points: [
-      "Smart contract automation",
+      "Tunnel automation",
       "Decentralized verification",
       "Innovative giving solutions"
     ]

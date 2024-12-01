@@ -19,7 +19,7 @@ const teamMembers = [
     name: "Mehmet Ali Selvet",
     role: "Backend & Blockchain Developer",
     image: "/images/team/phun333pic.jpg",
-    bio: "Experienced blockchain developer specializing in smart contracts and decentralized applications. Focused on scalable solutions.",
+    bio: "Experienced blockchain developer specializing in decentralized applications. Focused on scalable solutions.",
     social: {
       twitter: "#",
       linkedin: "#", 

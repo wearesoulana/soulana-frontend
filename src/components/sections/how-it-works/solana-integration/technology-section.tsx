@@ -11,8 +11,8 @@ const features = [
     ]
   },
   {
-    title: "Smart Contracts",
-    description: "Automated and transparent fund distribution through secure smart contracts.",
+    title: "Solana Tunnels",
+    description: "Automated and transparent fund distribution through secure solana tunnels.",
     details: [
       "Automated disbursement",
       "Transparent tracking",

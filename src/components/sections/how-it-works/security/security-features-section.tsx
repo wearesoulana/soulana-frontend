@@ -14,8 +14,8 @@ const features = [
   },
   {
     icon: Lock,
-    title: "Secure Smart Contracts",
-    description: "Audited and verified smart contracts ensure safe fund distribution.",
+    title: "Audit Safety",
+    description: "Audited and verified solana tunnels ensure safe fund distribution.",
     details: [
       "Regular security audits",
       "Automated testing",
