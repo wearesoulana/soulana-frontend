@@ -7,29 +7,29 @@ import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
 const partners = [
   {
     id: 1,
-    name: "Adidas",
-    logo: "/images/partners/adidas.svg",
+    name: "Solana",
+    logo: "/images/partners/solana.png",
   },
   {
     id: 2,
-    name: "Atlassian",
-    logo: "/images/partners/atlassian.svg",
+    name: "Solphi",
+    logo: "/images/partners/solphi.png",
   },
   {
     id: 3,
-    name: "Logitech",
-    logo: "/images/partners/logitech.svg",
+    name: "Utilify",
+    logo: "/images/partners/utilify.png",
   },
-  {
-    id: 4,
-    name: "IBM",
-    logo: "/images/partners/ibm.svg",
-  },
-  {
-    id: 5,
-    name: "Samsung",
-    logo: "/images/partners/samsung.svg",
-  },
+  // {
+  //   id: 4,
+  //   name: "IBM",
+  //   logo: "/images/partners/ibm.svg",
+  // },
+  // {
+  //   id: 5,
+  //   name: "Samsung",
+  //   logo: "/images/partners/samsung.svg",
+  // },
   {
     id: 6,
     name: "Meta",
@@ -40,11 +40,11 @@ const partners = [
     name: "Uber",
     logo: "/images/partners/uber.svg",
   },
-  {
-    id: 8,
-    name: "Accenture",
-    logo: "/images/partners/accenture.svg",
-  },
+  // {
+  //   id: 8,
+  //   name: "Accenture",
+  //   logo: "/images/partners/accenture.svg",
+  // },
 ];
 
 export const PartnerSection = () => {
@@ -81,6 +81,7 @@ export const PartnerSection = () => {
                     src={partner.logo}
                     alt={`${partner.name} logo`}
                     fill
+                    sizes="(max-width: 768px) 100vw, 150px"
                     className="object-contain"
                   />
                 </div>
@@ -97,6 +98,7 @@ export const PartnerSection = () => {
                     src={partner.logo}
                     alt={`${partner.name} logo`}
                     fill
+                    sizes="(max-width: 768px) 100vw, 150px"
                     className="object-contain"
                   />
                 </div>
