@@ -7,7 +7,7 @@ import { WalletProvider } from "@/contexts/wallet-context";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://Soulana.com"),
+  metadataBase: new URL("https://cyberia-frontend.vercel.app"),
   title: {
     template: "%s | Soulana",
     default: "Soulana - Blockchain-Powered Charitable Giving",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://Soulana.com",
+    url: "https://cyberia-frontend.vercel.app",
     siteName: "Soulana",
     title: "Soulana - Blockchain-Powered Charitable Giving",
     description: "Transform charitable giving with blockchain technology. Make secure, transparent donations and track your impact in real-time.",
