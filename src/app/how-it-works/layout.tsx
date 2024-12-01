@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: {
     template: "%s | Soulana",
-    default: "How It Works | Soulana",
+    default: "How It Works",
   },
   description: "Learn how Soulana leverages blockchain technology to revolutionize charitable giving with transparency and efficiency.",
   keywords: ["blockchain", "charity", "donation", "solana", "transparency", "security"],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://Soulana.com/how-it-works",
+    url: "https://cyberia-frontend.vercel.app/how-it-works",
     siteName: "Soulana",
     title: "How It Works | Soulana",
     description: "Learn how Soulana leverages blockchain technology to revolutionize charitable giving.",

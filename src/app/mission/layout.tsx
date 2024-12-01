@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: {
     template: "%s | Soulana",
-    default: "Our Mission | Soulana",
+    default: "Our Mission",
   },
   description: "Learn about our mission to revolutionize charitable giving through blockchain technology and create lasting global impact.",
   keywords: ["mission", "vision", "values", "blockchain charity", "social impact"],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://Soulana.com/mission",
+    url: "https://cyberia-frontend.vercel.app/mission",
     siteName: "Soulana",
     title: "Our Mission | Soulana",
     description: "Learn about our mission to revolutionize charitable giving through blockchain technology.",
@@ -37,5 +37,5 @@ export default function MissionLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <>{children}</>;
 } 
