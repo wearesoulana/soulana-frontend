@@ -83,11 +83,11 @@ export const GlobalReachSection = () => {
       {/* World Map Container */}
       <div className="relative w-full aspect-[2/1] bg-white/30 dark:bg-black/30 rounded-3xl border border-red-200 dark:border-red-900 overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 bg-[url('/images/impact/world-map-pattern.svg')] bg-no-repeat bg-center bg-contain opacity-20" />
+        <div className="absolute inset-0 bg-[url('/images/impact/world-map-pattern.svg')] bg-no-repeat bg-center bg-contain opacity-40 dark:opacity-20" />
         
         {/* Gradient Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-white/20 via-transparent to-white/20 dark:from-black/20 dark:to-black/20" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/50 dark:to-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-white/40 via-transparent to-white/40 dark:from-black/20 dark:to-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/60 dark:to-black/50" />
 
         {/* Impact Points */}
         {impactPoints.map((point) => (

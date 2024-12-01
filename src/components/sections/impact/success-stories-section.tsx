@@ -9,7 +9,7 @@ const stories = [
     location: "East Africa",
     impact: "10,000+ people served",
     amount: "$50,000",
-    image: "/images/impact/water-project.jpg"
+    image: "/images/impact/clean-water.jpg"
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ const stories = [
     location: "Latin America",
     impact: "1,000+ patients treated",
     amount: "$100,000",
-    image: "/images/impact/medical-project.jpg"
+    image: "/images/impact/medical-aid.jpg"
   }
 ];
 
