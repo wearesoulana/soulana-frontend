@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">5. Contact Us</h2>
               <p>If you have any questions about this Privacy Policy, please contact us at:</p>
-              <p>Email: privacy@Soulana.org</p>
+              <p>Email: privacy@soulana.org</p>
             </section>
           </div>
         </div>

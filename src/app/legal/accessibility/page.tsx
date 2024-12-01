@@ -75,7 +75,7 @@ export default function AccessibilityPage() {
                 encounter accessibility barriers:
               </p>
               <ul className="list-disc pl-6 mb-4">
-                <li>Email: accessibility@Soulana.org</li>
+                <li>Email: accessibility@soulana.org</li>
                 <li>Phone: (555) 123-4567</li>
               </ul>
             </section>

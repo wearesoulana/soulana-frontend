@@ -78,7 +78,7 @@ export default function TermsOfServicePage() {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">8. Contact Information</h2>
               <p>For questions about these Terms, please contact us at:</p>
-              <p>Email: legal@Soulana.org</p>
+              <p>Email: legal@soulana.org</p>
             </section>
           </div>
         </div>
