@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ChevronUp
 } from "lucide-react";
+import { useWallet } from "@/contexts/wallet-context";
 
 type FAQItem = {
   id: string;
@@ -66,6 +67,7 @@ const faqs: FAQItem[] = [
 ];
 
 export default function TokenRewardsPage() {
+  const { isConnected, connectWallet } = useWallet();
   const [openFaqIndex, setOpenFaqIndex] = React.useState<string | null>(null);
 
   // Mock data - replace with real data from your backend
@@ -102,139 +104,154 @@ export default function TokenRewardsPage() {
             <p className="text-lg text-red-800/60 dark:text-rose-100/60 mb-8">
               Earn tokens by making donations and participate in governance
             </p>
-            <Button className="bg-red-600 hover:bg-red-700 text-white">
-              Connect Wallet <Wallet className="ml-2 h-4 w-4" />
-            </Button>
+            {!isConnected && (
+              <Button 
+                onClick={connectWallet}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Connect Wallet <Wallet className="ml-2 h-4 w-4" />
+              </Button>
+            )}
           </div>
 
           {/* Token Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-            <Card className="p-6 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Total Supply</p>
-                  <h3 className="text-2xl font-bold text-red-950 dark:text-rose-50 mt-1">{stats.totalTokens}</h3>
-                </div>
-                <Coins className="h-6 w-6 text-red-600" />
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Token Price</p>
-                  <h3 className="text-2xl font-bold text-red-950 dark:text-rose-50 mt-1">{stats.price}</h3>
-                </div>
-                <TrendingUp className="h-6 w-6 text-red-600" />
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Total Holders</p>
-                  <h3 className="text-2xl font-bold text-red-950 dark:text-rose-50 mt-1">{stats.holders}</h3>
-                </div>
-                <Users className="h-6 w-6 text-red-600" />
-              </div>
-            </Card>
-          </div>
-
-          {/* User Stats Section */}
-          <Card className="p-8 mb-12 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
-            <h2 className="text-2xl font-bold mb-6 text-red-950 dark:text-rose-50">Your Statistics</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div>
-                <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Token Balance</p>
-                <p className="text-xl font-bold text-red-950 dark:text-rose-50 mt-1">{userStats.tokenBalance}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Pending Rewards</p>
-                <p className="text-xl font-bold text-red-950 dark:text-rose-50 mt-1">{userStats.pendingRewards}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Total Donated</p>
-                <p className="text-xl font-bold text-red-950 dark:text-rose-50 mt-1">{userStats.totalDonated}</p>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Last Donation</p>
-                <p className="text-xl font-bold text-red-950 dark:text-rose-50 mt-1">{userStats.lastDonation}</p>
-              </div>
-            </div>
-          </Card>
-
-          {/* How It Works Section */}
-          <Card className="p-8 mb-12 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
-            <h2 className="text-2xl font-bold mb-6 text-red-950 dark:text-rose-50">How It Works</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="flex flex-col items-center text-center">
-                <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mb-4">
-                  <Coins className="h-6 w-6 text-red-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-red-950 dark:text-rose-50">Make a Donation</h3>
-                <p className="text-red-800/60 dark:text-rose-100/60">
-                  Donate to your chosen cause through our platform
-                </p>
-              </div>
-
-              <div className="flex flex-col items-center text-center">
-                <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mb-4">
-                  <ArrowRight className="h-6 w-6 text-red-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-red-950 dark:text-rose-50">Receive Tokens</h3>
-                <p className="text-red-800/60 dark:text-rose-100/60">
-                  Get 1% of your donation amount in tokens automatically
-                </p>
-              </div>
-
-              <div className="flex flex-col items-center text-center">
-                <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mb-4">
-                  <History className="h-6 w-6 text-red-600" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2 text-red-950 dark:text-rose-50">Use Your Tokens</h3>
-                <p className="text-red-800/60 dark:text-rose-100/60">
-                  Participate in governance and earn rewards
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {/* FAQ Section */}
-          <Card className="p-8 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
-            <h2 className="text-2xl font-bold mb-8 text-red-950 dark:text-rose-50">Frequently Asked Questions</h2>
-            <div className="space-y-4">
-              {faqs.map((faq) => (
-                <div key={faq.id} className="border-b border-border last:border-0">
-                  <button
-                    type="button"
-                    onClick={() => toggleFaq(faq.id)}
-                    className="flex justify-between items-center w-full py-4 text-left"
-                    aria-expanded={openFaqIndex === faq.id}
-                    aria-controls={`faq-answer-${faq.id}`}
-                  >
-                    <h3 className="text-lg font-semibold text-red-950 dark:text-rose-50">
-                      {faq.question}
-                    </h3>
-                    {openFaqIndex === faq.id ? (
-                      <ChevronUp className="h-5 w-5 text-red-600" />
-                    ) : (
-                      <ChevronDown className="h-5 w-5 text-red-600" />
-                    )}
-                  </button>
-                  {openFaqIndex === faq.id && (
-                    <div 
-                      id={`faq-answer-${faq.id}`}
-                      className="pb-4"
-                    >
-                      <p className="text-red-800/60 dark:text-rose-100/60">
-                        {faq.answer}
-                      </p>
+          {isConnected ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                <Card className="p-6 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Total Supply</p>
+                      <h3 className="text-2xl font-bold text-red-950 dark:text-rose-50 mt-1">{stats.totalTokens}</h3>
                     </div>
-                  )}
+                    <Coins className="h-6 w-6 text-red-600" />
+                  </div>
+                </Card>
+
+                <Card className="p-6 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Token Price</p>
+                      <h3 className="text-2xl font-bold text-red-950 dark:text-rose-50 mt-1">{stats.price}</h3>
+                    </div>
+                    <TrendingUp className="h-6 w-6 text-red-600" />
+                  </div>
+                </Card>
+
+                <Card className="p-6 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Total Holders</p>
+                      <h3 className="text-2xl font-bold text-red-950 dark:text-rose-50 mt-1">{stats.holders}</h3>
+                    </div>
+                    <Users className="h-6 w-6 text-red-600" />
+                  </div>
+                </Card>
+              </div>
+
+              {/* User Stats Section */}
+              <Card className="p-8 mb-12 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
+                <h2 className="text-2xl font-bold mb-6 text-red-950 dark:text-rose-50">Your Statistics</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div>
+                    <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Token Balance</p>
+                    <p className="text-xl font-bold text-red-950 dark:text-rose-50 mt-1">{userStats.tokenBalance}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Pending Rewards</p>
+                    <p className="text-xl font-bold text-red-950 dark:text-rose-50 mt-1">{userStats.pendingRewards}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Total Donated</p>
+                    <p className="text-xl font-bold text-red-950 dark:text-rose-50 mt-1">{userStats.totalDonated}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-red-800/60 dark:text-rose-100/60">Last Donation</p>
+                    <p className="text-xl font-bold text-red-950 dark:text-rose-50 mt-1">{userStats.lastDonation}</p>
+                  </div>
                 </div>
-              ))}
+              </Card>
+
+              {/* How It Works Section */}
+              <Card className="p-8 mb-12 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
+                <h2 className="text-2xl font-bold mb-6 text-red-950 dark:text-rose-50">How It Works</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                  <div className="flex flex-col items-center text-center">
+                    <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mb-4">
+                      <Coins className="h-6 w-6 text-red-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2 text-red-950 dark:text-rose-50">Make a Donation</h3>
+                    <p className="text-red-800/60 dark:text-rose-100/60">
+                      Donate to your chosen cause through our platform
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col items-center text-center">
+                    <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mb-4">
+                      <ArrowRight className="h-6 w-6 text-red-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2 text-red-950 dark:text-rose-50">Receive Tokens</h3>
+                    <p className="text-red-800/60 dark:text-rose-100/60">
+                      Get 1% of your donation amount in tokens automatically
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col items-center text-center">
+                    <div className="h-12 w-12 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center mb-4">
+                      <History className="h-6 w-6 text-red-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2 text-red-950 dark:text-rose-50">Use Your Tokens</h3>
+                    <p className="text-red-800/60 dark:text-rose-100/60">
+                      Participate in governance and earn rewards
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              {/* FAQ Section */}
+              <Card className="p-8 bg-white/50 dark:bg-black/20 backdrop-blur-sm">
+                <h2 className="text-2xl font-bold mb-8 text-red-950 dark:text-rose-50">Frequently Asked Questions</h2>
+                <div className="space-y-4">
+                  {faqs.map((faq) => (
+                    <div key={faq.id} className="border-b border-border last:border-0">
+                      <button
+                        type="button"
+                        onClick={() => toggleFaq(faq.id)}
+                        className="flex justify-between items-center w-full py-4 text-left"
+                        aria-expanded={openFaqIndex === faq.id}
+                        aria-controls={`faq-answer-${faq.id}`}
+                      >
+                        <h3 className="text-lg font-semibold text-red-950 dark:text-rose-50">
+                          {faq.question}
+                        </h3>
+                        {openFaqIndex === faq.id ? (
+                          <ChevronUp className="h-5 w-5 text-red-600" />
+                        ) : (
+                          <ChevronDown className="h-5 w-5 text-red-600" />
+                        )}
+                      </button>
+                      {openFaqIndex === faq.id && (
+                        <div 
+                          id={`faq-answer-${faq.id}`}
+                          className="pb-4"
+                        >
+                          <p className="text-red-800/60 dark:text-rose-100/60">
+                            {faq.answer}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-red-800/60 dark:text-rose-100/60">
+                Connect your wallet to view your token rewards and statistics
+              </p>
             </div>
-          </Card>
+          )}
         </div>
       </main>
       <Footer />
