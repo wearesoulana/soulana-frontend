@@ -40,6 +40,7 @@ A decentralized donation platform built on Solana blockchain, enabling transpare
 - Privacy protection
 
 ## Tech Stack
+Our UI is not a template, it's built from scratch with Next.js, React, TypeScript, TailwindCSS, Framer Motion, and Shadcn/ui.
 
 ### Frontend
 - Next.js 15
@@ -98,16 +99,16 @@ A decentralized donation platform built on Solana blockchain, enabling transpare
 
 1. Clone the repository
 2. Install dependencies:
-   ^npm install^
+   `npm install`
 
 3. Set up environment variables:
-   ^cp .env.example .env.local^
+   `cp .env.example .env.local`
 
 4. Run development server:
-   ^npm run dev^
+   `npm run dev`
 
 5. Build for production:
-   ^npm run build^
+   `npm run build`
 
 ## Contributing
 
