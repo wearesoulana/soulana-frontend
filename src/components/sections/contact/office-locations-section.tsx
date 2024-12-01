@@ -7,7 +7,7 @@ const offices = [
     country: "United States",
     address: "123 Market Street, Suite 456",
     phone: "+1 (555) 123-4567",
-    email: "sf@Soulana.org",
+    email: "sanfrancisco@soulana.org",
     coordinates: "37.7749° N, 122.4194° W"
   },
   {
@@ -15,7 +15,7 @@ const offices = [
     country: "United Kingdom",
     address: "45 Oxford Street",
     phone: "+44 20 7123 4567",
-    email: "london@Soulana.org",
+    email: "london@soulana.org",
     coordinates: "51.5074° N, 0.1278° W"
   },
   {
@@ -23,14 +23,14 @@ const offices = [
     country: "Singapore",
     address: "88 Market Street, #12-01",
     phone: "+65 6789 0123",
-    email: "sg@Soulana.org",
+    email: "singapore@soulana.org",
     coordinates: "1.3521° N, 103.8198° E"
   }
 ];
 
 export const OfficeLocationsSection = () => {
   return (
-    <section className="mt-32">
+    <section className="mt-16">
       <h2 className="text-3xl sm:text-4xl font-bold text-red-950 dark:text-rose-50 text-center mb-16">
         Our Offices
       </h2>
