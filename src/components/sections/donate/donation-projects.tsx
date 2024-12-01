@@ -2,28 +2,24 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { 
   Connection, 
   Transaction, 
   PublicKey, 
   LAMPORTS_PER_SOL, 
-  clusterApiUrl,
+  clusterApiUrl, 
   SystemProgram,
 } from "@solana/web3.js";
 import { WalletButton } from "@/components/ui/wallet-button";
-import { Copy } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useWallet } from "@/contexts/wallet-context";
 
 // Blink authority public key
-const BLINK_AUTHORITY = new PublicKey("9MNofMMhUFiC9gPwaYHJC6FMeEefzvkfj1p6acHgSf8K");
 
 // Initialize connection explicitly with devnet
 const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
-
-// Project donation receiver address (should match the one in the API)
-const DONATION_RECEIVER = new PublicKey("9MNofMMhUFiC9gPwaYHJC6FMeEefzvkfj1p6acHgSf8K");
 
 interface Project {
   id: number;
@@ -74,26 +70,46 @@ const projects: Project[] = [
     target: "100 SOL",
     raised: "45 SOL",
     minDonation: 0.001,
-    wallet: DONATION_RECEIVER,
+    wallet: new PublicKey("F1rstn82GYYuWVPYBg7YKUZ2fZskDFg27ocXBx88pcgW"),
+  },
+  {
+    id: 2,
+    title: "GreenSol Reforestation",
+    description: "Support reforestation efforts to combat climate change.",
+    image: "https://i.ibb.co/7GHVvwP/greensolrefores.png",
+    target: "200 SOL",
+    raised: "45 SOL",
+    minDonation: 0.001,
+    wallet: new PublicKey("F1rstn82GYYuWVPYBg7YKUZ2fZskDFg27ocXBx88pcgW"),
   }
 ];
 
 export function DonationProjects() {
-  const { connected, publicKey, signTransaction } = useWallet();
+  const { isConnected: connected, walletAddress } = useWallet();
   const [loading, setLoading] = useState<Record<number, boolean>>({});
   const [balance, setBalance] = useState<number | null>(null);
+  const [, setRecipientBalance] = useState<Record<string, number>>({});
+  
+  // Initialize donationAmounts with minimum donation amounts for each project
+  const [donationAmounts, setDonationAmounts] = useState<Record<number, number>>(() => {
+    return projects.reduce((acc, project) => {
+      acc[project.id] = project.minDonation;
+      return acc;
+    }, {} as Record<number, number>);
+  });
 
-  // Fetch balance when wallet is connected
+  // Wrap publicKey initialization in useMemo
+  const publicKey = useMemo(() => 
+    walletAddress ? new PublicKey(walletAddress) : null
+  , [walletAddress]); 
+
+  // Update useEffect to use our wallet context
   useEffect(() => {
     const fetchBalance = async () => {
       if (connected && publicKey) {
         try {
           const balance = await connection.getBalance(publicKey);
           setBalance(balance / LAMPORTS_PER_SOL);
-          console.log('Wallet Address:', publicKey.toBase58());
-          console.log('Current Network: Devnet');
-          console.log('To get devnet SOL, run:');
-          console.log(`solana airdrop 2 ${publicKey.toBase58()} --url devnet`);
         } catch (error) {
           console.error('Error fetching balance:', error);
           setBalance(null);
@@ -104,182 +120,323 @@ export function DonationProjects() {
     };
 
     fetchBalance();
-    // Set up balance refresh interval
     const intervalId = setInterval(fetchBalance, 5000);
     return () => clearInterval(intervalId);
   }, [connected, publicKey]);
 
-  const handleDonate = async (projectId: number, minDonation: number) => {
-    if (!connected || !publicKey || !signTransaction) {
+  useEffect(() => {
+    const fetchRecipientBalances = async () => {
+      try {
+        const balances = await Promise.all(
+          projects.map(async (project) => {
+            const balance = await connection.getBalance(project.wallet);
+            return [project.wallet.toBase58(), balance / LAMPORTS_PER_SOL];
+          })
+        );
+        setRecipientBalance(Object.fromEntries(balances));
+      } catch (error) {
+        console.error('Error fetching recipient balances:', error);
+      }
+    };
+
+    fetchRecipientBalances();
+    const intervalId = setInterval(fetchRecipientBalances, 5000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleDonate = async (projectId: number) => {
+    if (!connected || !publicKey) {
       toast.error("Please connect your wallet first");
+      return;
+    }
+
+    const donationAmount = donationAmounts[projectId] || 0;
+    const project = projects.find(p => p.id === projectId);
+    
+    console.log('Starting donation process...');
+    console.log('Project ID:', projectId);
+    console.log('Donation Amount:', donationAmount);
+    console.log('Project:', project);
+    console.log('Wallet Balance:', balance);
+    console.log('Recipient Wallet:', project?.wallet.toBase58());
+    
+    // Log initial balances
+    const initialSenderBalance = await connection.getBalance(publicKey);
+    const initialRecipientBalance = project ? await connection.getBalance(project.wallet) : 0;
+    console.log('Initial Sender Balance:', initialSenderBalance / LAMPORTS_PER_SOL);
+    console.log('Initial Recipient Balance:', initialRecipientBalance / LAMPORTS_PER_SOL);
+
+    if (!project) {
+      console.log('Error: Project not found');
+      toast.error("Project not found");
+      return;
+    }
+
+    if (donationAmount < project.minDonation) {
+      console.log('Error: Donation amount below minimum', {
+        provided: donationAmount,
+        minimum: project.minDonation
+      });
+      toast.error(`Minimum donation is ${project.minDonation} SOL`);
       return;
     }
 
     try {
       setLoading(prev => ({ ...prev, [projectId]: true }));
 
-      // Check if we have a valid balance
-      if (balance === null) {
-        throw new Error("Unable to fetch wallet balance");
+      if (balance === null || balance < donationAmount) {
+        console.log('Error: Insufficient balance', {
+          required: donationAmount,
+          available: balance
+        });
+        throw new Error(`Insufficient balance. You need at least ${donationAmount} SOL`);
       }
 
-      // Check if wallet has enough SOL
-      if (balance < minDonation) {
-        throw new Error(`Insufficient balance. You need at least ${minDonation} SOL. Current balance: ${balance.toFixed(4)} SOL`);
-      }
-
-      const project = projects.find(p => p.id === projectId);
-      if (!project) {
-        throw new Error("Project not found");
-      }
-
-      toast.info(`Preparing donation of ${minDonation} SOL to ${project.title}`);
-
-      // Call the Blink route to get transaction
-      const response = await fetch("/api/blink-chain", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          kind: "donate",
-          amount: minDonation.toString(),
-          projectId: projectId,
-          projectWallet: project.wallet.toBase58(),
-          clientWallet: publicKey.toBase58(),
-        }),
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.error || "Failed to process donation");
-      }
-
-      const { transaction: serializedTransaction } = responseData;
-      
-      if (!serializedTransaction) {
-        throw new Error("No transaction received from server");
-      }
-
-      // Deserialize and sign the transaction
-      const transaction = Transaction.from(
-        Buffer.from(serializedTransaction, "base64")
+      console.log('Creating transaction...');
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: project.wallet,
+          lamports: donationAmount * LAMPORTS_PER_SOL,
+        })
       );
 
-      // Set the fee payer and signer
+      console.log('Getting latest blockhash...');
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
-      // Update all signing accounts to use the connected wallet
-      for (const instruction of transaction.instructions) {
-        if (instruction.programId.equals(SystemProgram.programId)) {
-          instruction.keys = instruction.keys.map(key => {
-            if (key.isSigner) {
-              return {
-                ...key,
-                pubkey: publicKey,
-              };
-            }
-            return key;
-          });
+      try {
+        console.log('Requesting wallet signature...');
+        // Check if window.solana exists before accessing it
+        if (!window.solana) {
+          throw new Error('Solana wallet not found');
         }
+        const signedTransaction = await window.solana.signTransaction(transaction);
+        
+        console.log('Sending transaction...');
+        const signature = await connection.sendRawTransaction(
+          signedTransaction.serialize()
+        );
+
+        console.log('Transaction sent:', signature);
+        console.log('Transaction URL:', `https://explorer.solana.com/tx/${signature}?cluster=devnet`);
+        toast.info("Transaction sent! Waiting for confirmation...");
+
+        console.log('Waiting for confirmation...');
+        const confirmation = await connection.confirmTransaction(signature);
+
+        if (confirmation?.value?.err) {
+          console.log('Error: Transaction failed to confirm', confirmation.value.err);
+          throw new Error("Transaction failed to confirm");
+        }
+        
+        // Wait a bit for the network to propagate the change
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Check final balances
+        const finalSenderBalance = await connection.getBalance(publicKey);
+        const finalRecipientBalance = await connection.getBalance(project.wallet);
+        
+        console.log('Final Sender Balance:', finalSenderBalance / LAMPORTS_PER_SOL);
+        console.log('Final Recipient Balance:', finalRecipientBalance / LAMPORTS_PER_SOL);
+        console.log('Sender Balance Change:', (finalSenderBalance - initialSenderBalance) / LAMPORTS_PER_SOL);
+        console.log('Recipient Balance Change:', (finalRecipientBalance - initialRecipientBalance) / LAMPORTS_PER_SOL);
+
+        // Verify the transaction
+        const txInfo = await connection.getTransaction(signature, {
+          commitment: 'confirmed',
+          maxSupportedTransactionVersion: 0
+        });
+        
+        console.log('Transaction Info:', txInfo);
+        
+        if (!txInfo) {
+          throw new Error("Failed to fetch transaction info");
+        }
+
+        toast.success(`Successfully donated ${donationAmount} SOL to ${project.title}!`);
+        
+        // Refresh balances
+        const newBalance = await connection.getBalance(publicKey);
+        setBalance(newBalance / LAMPORTS_PER_SOL);
+
+      } catch (error) {
+        console.error("Transaction error:", error);
+        throw new Error("Failed to sign or send transaction");
       }
 
-      // Sign the transaction
-      const signedTransaction = await signTransaction(transaction);
-
-      // Send the signed transaction
-      const signature = await connection.sendRawTransaction(
-        signedTransaction.serialize()
-      );
-
-      toast.success("Transaction sent! Waiting for confirmation...");
-
-      // Wait for confirmation with a timeout
-      const confirmationPromise = connection.confirmTransaction(signature);
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error("Transaction confirmation timeout")), 30000)
-      );
-
-      const confirmation = await Promise.race([
-        confirmationPromise,
-        timeoutPromise,
-      ]);
-
-      if (confirmation?.value?.err) {
-        throw new Error("Transaction failed to confirm");
-      }
-
-      toast.success(`Thank you for donating ${minDonation} SOL to ${project.title}! Your contribution helps make a difference.`);
-      
-      // Refresh balance after successful donation
-      const newBalance = await connection.getBalance(publicKey);
-      setBalance(newBalance / LAMPORTS_PER_SOL);
-      
     } catch (error) {
       console.error("Donation error:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to process donation");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to process donation");
+      }
     } finally {
       setLoading(prev => ({ ...prev, [projectId]: false }));
     }
   };
 
-  const getButtonText = (projectId: number, connected: boolean, loading: boolean, balance: number | null, minDonation: number): string => {
+  const handleAmountChange = (projectId: number, value: string) => {
+    const amount = Number.parseFloat(value);
+    const project = projects.find(p => p.id === projectId);
+    
+    if (!project) return;
+
+    // Validate and update amount
+    if (!Number.isNaN(amount)) {
+      if (amount >= project.minDonation) {
+        setDonationAmounts(prev => ({
+          ...prev,
+          [projectId]: amount
+        }));
+      } else {
+        setDonationAmounts(prev => ({
+          ...prev,
+          [projectId]: project.minDonation
+        }));
+        toast.error(`Minimum donation is ${project.minDonation} SOL`);
+      }
+    }
+  };
+
+  const getButtonText = (projectId: number, connected: boolean, loading: boolean, balance: number | null): string => {
     if (loading) return "Processing...";
     if (!connected) return "Connect Wallet";
     if (balance === null) return "Loading Balance...";
-    if (balance < minDonation) return "Insufficient Balance";
+    const amount = donationAmounts[projectId] || 0;
+    if (balance < amount) return "Insufficient Balance";
     return "Donate Now";
-  };
-
-  const handleCopyAddress = async () => {
-    if (publicKey) {
-      await navigator.clipboard.writeText(publicKey.toBase58());
-      toast.success("Wallet address copied to clipboard!");
-    }
   };
 
   return (
     <section className="mt-10 container mx-auto px-4">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold text-red-950 dark:text-rose-50 text-center mb-4">
-          Donation Projects
+          Donate to Projects
         </h1>
+        <p className="text-red-800/80 dark:text-rose-100/80 text-center mb-4">
+          Choose a project to support and make your impact
+        </p>
         
         {/* Wallet Connection Section */}
         <div className="text-center mb-10 space-y-3 bg-white/30 dark:bg-black/30 rounded-2xl border border-red-200 dark:border-red-900 p-6 max-w-md mx-auto">
           <WalletButton />
-          {/* {connected && publicKey && (
-            <div className="space-y-2">
-              <p className="text-sm text-red-800/80 dark:text-rose-100/80">
-                Balance: {balance !== null ? `${balance.toFixed(4)} SOL` : "Loading..."}
-              </p>
-              <div className="flex items-center justify-center gap-2">
-                <p className="text-xs text-red-800/60 dark:text-rose-100/60 font-mono">
-                  Address: {publicKey.toBase58().slice(0, 4)}...{publicKey.toBase58().slice(-4)}
+          {connected && publicKey && (
+            <div className="space-y-4">
+              {/* Balance Information */}
+              <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
+                <p className="text-sm font-medium text-red-800/80 dark:text-rose-100/80">
+                  Balance: {balance !== null ? `${balance.toFixed(4)} SOL` : "Loading..."}
                 </p>
-                <button
-                  type="button"
-                  onClick={handleCopyAddress}
-                  className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-md transition-colors"
-                  title="Copy full address"
+                <p className="text-xs text-red-600/60 dark:text-rose-200/60">
+                  Min donation: 0.001 SOL
+                </p>
+              </div>
+
+              {/* Wallet Address */}
+              {/* <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
+                <div className="flex items-center justify-center gap-2">
+                  <p className="text-sm font-medium text-red-800/80 dark:text-rose-100/80">
+                    Wallet Address
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleCopyAddress}
+                    className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-md transition-colors"
+                    title="Copy full address"
+                  >
+                    <Copy className="h-4 w-4 text-red-800/60 dark:text-rose-100/60" />
+                  </button>
+                </div>
+                <p className="text-xs font-mono text-red-600/80 dark:text-rose-200/80 mt-1">
+                  {publicKey.toBase58()}
+                </p>
+              </div> */}
+
+              {/* Network Information */}
+              {/* <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-lg">
+                <p className="text-sm font-medium text-red-800/80 dark:text-rose-100/80">
+                  Network: Devnet
+                </p>
+                <p className="text-xs text-red-600/60 dark:text-rose-200/60">
+                  This is a test network for development
+                </p>
+              </div> */}
+
+              {/* Get Test SOL Instructions */}
+              {/* <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-lg space-y-2">
+                <p className="text-sm font-medium text-red-800/80 dark:text-rose-100/80">
+                  Need test SOL?
+                </p>
+                <div className="space-y-1">
+                  <p className="text-xs text-red-600/80 dark:text-rose-200/80">
+                    1. Install Solana CLI:
+                  </p>
+                  <code className="block text-xs font-mono bg-red-100/50 dark:bg-red-900/50 p-2 rounded">
+                    sh -c "$(curl -sSfL https://release.solana.com/v1.17.9/install)"
+                  </code>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs text-red-600/80 dark:text-rose-200/80">
+                    2. Get free devnet SOL:
+                  </p>
+                  <div className="relative">
+                    <code className="block text-xs font-mono bg-red-100/50 dark:bg-red-900/50 p-2 rounded">
+                      solana airdrop 2 {publicKey.toBase58()} --url devnet
+                    </code>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `solana airdrop 2 ${publicKey.toBase58()} --url devnet`
+                        );
+                        toast.success("Command copied to clipboard!");
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-red-200/50 dark:hover:bg-red-800/50 rounded"
+                      title="Copy command"
+                    >
+                      <Copy className="h-3 w-3 text-red-800/60 dark:text-rose-100/60" />
+                    </button>
+                  </div>
+                </div>
+                <p className="text-xs text-red-600/60 dark:text-rose-200/60">
+                  You can request up to 2 SOL every few seconds
+                </p>
+              </div> */}
+
+              {/* Quick Links */}
+              {/* <div className="flex gap-2 justify-center text-xs">
+                <a
+                  href="https://docs.solana.com/cli/install-solana-cli-tools"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                 >
-                  <Copy className="h-4 w-4 text-red-800/60 dark:text-rose-100/60" />
-                </button>
-              </div>
-              <p className="text-xs text-red-800/60 dark:text-rose-100/60">
-                Network: Devnet
-              </p>
-              <div className="bg-red-100/30 dark:bg-red-900/30 rounded-lg p-2 mt-2">
-                <p className="text-xs text-red-800/60 dark:text-rose-100/60">
-                  Get test SOL:
-                </p>
-                <code className="text-xs block mt-1 font-mono text-red-800/80 dark:text-rose-100/80">
-                  solana airdrop 2 {publicKey.toBase58()} --url devnet
-                </code>
-              </div>
+                  CLI Docs
+                </a>
+                <span className="text-red-300">•</span>
+                <a
+                  href="https://explorer.solana.com/?cluster=devnet"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                >
+                  Explorer
+                </a>
+                <span className="text-red-300">•</span>
+                <a
+                  href="https://faucet.solana.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                >
+                  Faucet
+                </a>
+              </div> */}
             </div>
-          )} */}
+          )}
         </div>
 
         {/* Projects Grid */}
@@ -340,13 +497,37 @@ export function DonationProjects() {
                         Wallet: {project.wallet.toBase58().slice(0, 4)}...{project.wallet.toBase58().slice(-4)}
                       </span>
                     </div>
-                    <Button 
-                      className="w-full bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"
-                      onClick={() => handleDonate(project.id, project.minDonation)}
-                      disabled={!connected || loading[project.id] || balance === null || (balance < project.minDonation)}
-                    >
-                      {getButtonText(project.id, connected, loading[project.id], balance, project.minDonation)}
-                    </Button>
+                    
+                    {/* Amount Input */}
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        min={project.minDonation}
+                        step={0.001}
+                        value={donationAmounts[project.id]}
+                        onChange={(e) => handleAmountChange(project.id, e.target.value)}
+                        placeholder={`Min: ${project.minDonation} SOL`}
+                        className="flex-1"
+                      />
+                      <Button 
+                        className="bg-red-600 hover:bg-red-700 text-white disabled:opacity-50"
+                        onClick={() => handleDonate(project.id)}
+                        disabled={
+                          !connected || 
+                          loading[project.id] || 
+                          balance === null || 
+                          !donationAmounts[project.id] ||
+                          (balance < donationAmounts[project.id])
+                        }
+                      >
+                        {getButtonText(
+                          project.id, 
+                          connected, 
+                          loading[project.id], 
+                          balance
+                        )}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
