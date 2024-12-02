@@ -144,10 +144,10 @@ export function Navbar() {
       className="fixed top-0 w-full z-50"
     >
       <div 
-        className={`absolute inset-0 bg-gradient-to-b from-black/80 to-transparent backdrop-blur-lg shadow-sm transition-opacity duration-300 ${
+        className={`absolute inset-0 transition-all duration-300 ${
           isScrolled 
-            ? "opacity-100" 
-            : "opacity-0 pointer-events-none"
+            ? "bg-white/80 dark:bg-black/80 backdrop-blur-lg shadow-sm" 
+            : "bg-transparent"
         }`}
       />
       <div className="container mx-auto px-4 relative">
@@ -169,7 +169,7 @@ export function Navbar() {
                   priority
                 />
               </div>
-              <span className="text-2xl font-bold text-red-950 dark:text-rose-50">
+              <span className="text-2xl font-bold text-gray-800 dark:text-rose-50">
                 Soulana
               </span>
             </button>
@@ -189,8 +189,8 @@ export function Navbar() {
                         type="button"
                         className={`px-4 py-2 text-sm rounded-md transition-colors relative group flex items-center gap-2 ${
                           openDropdown === item.name
-                            ? "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/50"
-                            : "text-red-950/70 dark:text-rose-50/70 hover:bg-red-50 dark:hover:bg-red-950/50"
+                            ? "text-red-600 dark:text-red-400 bg-red-50/80 dark:bg-red-950/50"
+                            : "text-gray-600 dark:text-rose-50/70 hover:bg-gray-100/80 dark:hover:bg-red-950/50"
                         }`}
                         aria-expanded={openDropdown === item.name}
                         aria-haspopup="true"
@@ -209,7 +209,7 @@ export function Navbar() {
                       </button>
                       {openDropdown === item.name && (
                         <div 
-                          className="absolute top-full left-0 mt-1 w-56 rounded-md bg-white dark:bg-gray-950 shadow-lg ring-1 ring-black/5 dark:ring-white/5 py-1"
+                          className="absolute top-full left-0 mt-1 w-56 rounded-md bg-white/95 dark:bg-gray-950 shadow-lg ring-1 ring-black/5 dark:ring-white/5 py-1"
                           role="menu"
                           aria-orientation="vertical"
                         >
@@ -220,15 +220,15 @@ export function Navbar() {
                               onClick={() => handleNavigation(child.href)}
                               className={`block w-full text-left px-4 py-2 text-sm ${
                                 pathname === child.href
-                                  ? "bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400"
-                                  : "text-red-950/70 dark:text-rose-50/70 hover:bg-red-50 dark:hover:bg-red-950/50"
+                                  ? "bg-red-50/80 dark:bg-red-950/50 text-red-600 dark:text-red-400"
+                                  : "text-gray-600 dark:text-rose-50/70 hover:bg-gray-100/80 dark:hover:bg-red-950/50"
                               }`}
                               role="menuitem"
                               aria-label={child.name}
                             >
                               <div>
                                 {child.name}
-                                <span className="block text-xs text-red-800/60 dark:text-rose-100/60">
+                                <span className="block text-xs text-gray-500 dark:text-rose-100/60">
                                   {child.description}
                                 </span>
                               </div>
@@ -243,8 +243,8 @@ export function Navbar() {
                       onClick={() => handleNavigation(item.href)}
                       className={`px-4 py-2 text-sm rounded-md transition-colors flex items-center gap-2 ${
                         pathname === item.href
-                          ? "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/50"
-                          : "text-red-950/70 dark:text-rose-50/70 hover:bg-red-50 dark:hover:bg-red-950/50"
+                          ? "text-red-600 dark:text-red-400 bg-red-50/80 dark:bg-red-950/50"
+                          : "text-gray-600 dark:text-rose-50/70 hover:bg-gray-100/80 dark:hover:bg-red-950/50"
                       }`}
                     >
                       {item.icon && <item.icon className="h-4 w-4" />}
