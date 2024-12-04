@@ -37,6 +37,17 @@ interface Project {
   isUrgent?: boolean;
 }
 
+interface StoredTransaction {
+  signature: string;
+  amount: number;
+  timestamp: Date;
+  fromAddress: string;
+  toAddress: string;
+  projectId: number;
+  projectTitle: string;
+  status: 'started' | 'pending' | 'completed' | 'failed';
+}
+
 // Helper function to calculate progress percentage
 const calculateProgress = (raised: string, target: string): number => {
   const raisedAmount = Number.parseFloat(raised.split(" ")[0]);
@@ -206,30 +217,12 @@ export function DonationProjects() {
     const donationAmount = donationAmounts[projectId] || 0;
     const project = projects.find(p => p.id === projectId);
     
-    console.log('Starting donation process...');
-    console.log('Project ID:', projectId);
-    console.log('Donation Amount:', donationAmount);
-    console.log('Project:', project);
-    console.log('Wallet Balance:', balance);
-    console.log('Recipient Wallet:', project?.wallet.toBase58());
-    
-    // Log initial balances
-    const initialSenderBalance = await connection.getBalance(publicKey);
-    const initialRecipientBalance = project ? await connection.getBalance(project.wallet) : 0;
-    console.log('Initial Sender Balance:', initialSenderBalance / LAMPORTS_PER_SOL);
-    console.log('Initial Recipient Balance:', initialRecipientBalance / LAMPORTS_PER_SOL);
-
     if (!project) {
-      console.log('Error: Project not found');
       toast.error("Project not found");
       return;
     }
 
     if (donationAmount < project.minDonation) {
-      console.log('Error: Donation amount below minimum', {
-        provided: donationAmount,
-        minimum: project.minDonation
-      });
       toast.error(`Minimum donation is ${project.minDonation} SOL`);
       return;
     }
@@ -238,14 +231,10 @@ export function DonationProjects() {
       setLoading(prev => ({ ...prev, [projectId]: true }));
 
       if (balance === null || balance < donationAmount) {
-        console.log('Error: Insufficient balance', {
-          required: donationAmount,
-          available: balance
-        });
         throw new Error(`Insufficient balance. You need at least ${donationAmount} SOL`);
       }
 
-      console.log('Creating transaction...');
+      // Create transaction
       const transaction = new Transaction().add(
         SystemProgram.transfer({
           fromPubkey: publicKey,
@@ -254,30 +243,25 @@ export function DonationProjects() {
         })
       );
 
-      console.log('Getting latest blockhash...');
       const { blockhash } = await connection.getLatestBlockhash();
       transaction.recentBlockhash = blockhash;
       transaction.feePayer = publicKey;
 
       try {
-        console.log('Requesting wallet signature...');
-        // Check if window.solana exists before accessing it
         if (!window.solana) {
           throw new Error('Solana wallet not found');
         }
         const signedTransaction = await window.solana.signTransaction(transaction);
         
-        console.log('Sending transaction...');
         const signature = await connection.sendRawTransaction(
           signedTransaction.serialize()
         );
 
-        console.log('Transaction sent:', signature);
-        console.log('Transaction URL:', `https://explorer.solana.com/tx/${signature}?cluster=devnet`);
         toast.info("Transaction sent! Waiting for confirmation...");
 
-        const startingTransaction = {
-          signature: 'started',
+        // Create initial donation record
+        const donationData = {
+          signature,
           amount: donationAmount,
           timestamp: new Date(),
           fromAddress: publicKey.toBase58(),
@@ -287,69 +271,58 @@ export function DonationProjects() {
           status: 'started' as const
         };
 
+        // Store in localStorage for immediate feedback
         const existingTransactions = JSON.parse(localStorage.getItem('donations') || '[]');
-        const updatedTransactions = [startingTransaction, ...existingTransactions].slice(0, 5);
+        const updatedTransactions = [donationData, ...existingTransactions].slice(0, 5);
         localStorage.setItem('donations', JSON.stringify(updatedTransactions));
         window.dispatchEvent(new CustomEvent('newDonation', { detail: updatedTransactions }));
 
-        console.log('Waiting for confirmation...');
+        // Wait for confirmation
         const confirmation = await connection.confirmTransaction(signature);
 
-        // Find the current transaction and make it pending
-        const currentTransactionsPending = JSON.parse(localStorage.getItem('donations') || '[]');
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        const updatedTransactionsPending = currentTransactionsPending.map((tx: any) => 
-          tx.signature === 'started' ? { ...tx, signature, status: 'pending' as const } : tx
-        );
-        localStorage.setItem('donations', JSON.stringify(updatedTransactionsPending));
-        window.dispatchEvent(new CustomEvent('newDonation', { detail: updatedTransactionsPending }));
-
         if (confirmation?.value?.err) {
-          console.log('Error: Transaction failed to confirm', confirmation.value.err);
-          // Update transaction status to failed
+          // Update status to failed
           const currentTransactionsFailed = JSON.parse(localStorage.getItem('donations') || '[]');
-          // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-          const updatedTransactionsFailed = currentTransactionsFailed.map((tx: any) => 
+          const updatedTransactionsFailed = currentTransactionsFailed.map((tx: StoredTransaction) => 
             tx.signature === signature ? { ...tx, status: 'failed' as const } : tx
           );
           localStorage.setItem('donations', JSON.stringify(updatedTransactionsFailed));
           window.dispatchEvent(new CustomEvent('newDonation', { detail: updatedTransactionsFailed }));
           throw new Error("Transaction failed to confirm");
         }
-        
-        // Wait a bit for the network to propagate the change
-        await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Check final balances
-        const finalSenderBalance = await connection.getBalance(publicKey);
-        const finalRecipientBalance = await connection.getBalance(project.wallet);
-        
-        console.log('Final Sender Balance:', finalSenderBalance / LAMPORTS_PER_SOL);
-        console.log('Final Recipient Balance:', finalRecipientBalance / LAMPORTS_PER_SOL);
-        console.log('Sender Balance Change:', (finalSenderBalance - initialSenderBalance) / LAMPORTS_PER_SOL);
-        console.log('Recipient Balance Change:', (finalRecipientBalance - initialRecipientBalance) / LAMPORTS_PER_SOL);
-
-        // Verify the transaction
-        const txInfo = await connection.getTransaction(signature, {
-          commitment: 'confirmed',
-          maxSupportedTransactionVersion: 0
-        });
-        
-        if (!txInfo) {
-          throw new Error("Failed to fetch transaction info");
-        }
-
-        // Update transaction status to confirmed
-        const currentTransactionsConfirmed = JSON.parse(localStorage.getItem('donations') || '[]');
-        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-        const updatedTransactionsConfirmed = currentTransactionsConfirmed.map((tx: any) => 
+        // Update transaction status to completed
+        const currentTransactionsCompleted = JSON.parse(localStorage.getItem('donations') || '[]');
+        const updatedTransactionsCompleted = currentTransactionsCompleted.map((tx: StoredTransaction) => 
           tx.signature === signature ? { ...tx, status: 'completed' as const } : tx
         );
-        localStorage.setItem('donations', JSON.stringify(updatedTransactionsConfirmed));
-        window.dispatchEvent(new CustomEvent('newDonation', { detail: updatedTransactionsConfirmed }));
+        localStorage.setItem('donations', JSON.stringify(updatedTransactionsCompleted));
+        window.dispatchEvent(new CustomEvent('newDonation', { detail: updatedTransactionsCompleted }));
 
-        toast.success(`Successfully donated ${donationAmount} SOL to ${project.title}!`);
-        
+        // Store donation in database and calculate tokens
+        const response = await fetch('/api/profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            walletAddress: publicKey.toBase58(),
+            donation: {
+              ...donationData,
+              status: 'completed',
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to store donation');
+        }
+
+        const { tokenAmount } = await response.json();
+        toast.success(
+          `Successfully donated ${donationAmount} SOL to ${project.title}! You earned ${tokenAmount} CCT tokens!`
+        );
+
         // Refresh balances
         const newBalance = await connection.getBalance(publicKey);
         setBalance(newBalance / LAMPORTS_PER_SOL);

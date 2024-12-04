@@ -41,7 +41,7 @@ const navigation = [
     description: "Support our charitable projects"
   },
   { 
-    name: "Our Mission",
+    name: "Mission",
     href: "/mission",
     icon: Rocket,
     description: "Transforming global philanthropy"
@@ -86,6 +86,12 @@ const navigation = [
         description: "Enterprise-grade protection"
       },
     ],
+  },
+  { 
+    name: "Profile",
+    href: "/profile",
+    icon: Users,
+    description: "View your donations and tokens"
   },
   { 
     name: "Contact",
