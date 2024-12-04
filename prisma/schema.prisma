@@ -1,0 +1,71 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(cuid())
+  walletAddress String     @unique
+  username      String?    @unique
+  role          UserRole   @default(USER)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  donations     Donation[]
+  tokens        Token[]
+  badges        Badge[]    @relation("UserBadges")
+}
+
+model Donation {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  amount        Float
+  signature     String   @unique
+  projectId     Int
+  projectTitle  String
+  status        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Token {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+  amount        Float
+  reason        String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Badge {
+  id          String     @id @default(cuid())
+  name        String     @unique
+  description String
+  icon        String
+  type        BadgeType
+  threshold   Float?     // For donation-based badges
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  users       User[]     @relation("UserBadges")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  DEVELOPER
+  TEAM_MEMBER
+}
+
+enum BadgeType {
+  DONATION      // Based on donation amount
+  ROLE          // Based on user role
+  ACHIEVEMENT   // Special achievements
+} 
