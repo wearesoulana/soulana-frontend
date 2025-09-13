@@ -5,7 +5,7 @@ const teamMembers = [
   {
     id: 1,
     name: "Barış Cem Bayburtlu",
-    role: "Frontend & Backend Developer", 
+    role: "Frontend & Backend Developer",
     image: "/images/team/barispic.png",
     bio: "Full-stack developer with expertise in React and Node.js. Passionate about building impactful web applications.",
     social: {
@@ -22,18 +22,6 @@ const teamMembers = [
     bio: "Experienced blockchain developer specializing in decentralized applications. Focused on scalable solutions.",
     social: {
       twitter: "#",
-      linkedin: "#", 
-      github: "#"
-    }
-  },
-  {
-    id: 3,
-    name: "Eylül Çağan Uğtur",
-    role: "Product Owner & Designer",
-    image: "/images/team/caganpic.jpg",
-    bio: "Product strategist and UI/UX designer with a keen eye for detail. Dedicated to creating seamless user experiences.",
-    social: {
-      twitter: "#",
       linkedin: "#",
       github: "#"
     }
@@ -43,7 +31,7 @@ const teamMembers = [
 export const TeamSection = () => {
   return (
     <section className="mt-20">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {teamMembers.map((member) => (
           <div 
             key={member.id}

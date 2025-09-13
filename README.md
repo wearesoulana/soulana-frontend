@@ -5,8 +5,7 @@ A decentralized donation platform built on Solana blockchain, enabling transpare
 ## Team
 
 - Mehmet Ali Selvet
-- Barış Cem Bayburtlu  
-- Eylül Çağan Uğtur
+- Barış Cem Bayburtlu
 
 ## Features
 
