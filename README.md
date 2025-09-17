@@ -123,4 +123,4 @@ MIT License - see LICENSE.md
 
 ## Contact
 
-For questions or support, contact us at support@soulana.org
+For questions or support, contact us at hi@wiredium.com
